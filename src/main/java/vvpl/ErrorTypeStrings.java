@@ -7,8 +7,8 @@ package vvpl;
  * 
  * This class is not necessary for Assignment 1 but for Assignment 3
  */
-public class ErrorTypeStrings {
-    
+public class ErrorTypeStrings 
+{
     // lexical errors (e.g., wrong symbols)
     public static final String SCAN_ERROR   = "SCAN_ERROR";
     

@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import vvpl.ast.Stmt;
+import vvpl.ast.Statement;
 import vvpl.ast.visitors.ASTPrinter;
 import vvpl.parse.Parser;
 import vvpl.scan.Scanner;
@@ -48,7 +48,7 @@ public class ParserTest {
         StringBuilder builder = new StringBuilder();
         ASTPrinter printer = new ASTPrinter();
         for (var stmt : statements) {
-            builder.append(printer.print((Stmt) stmt));
+            builder.append(printer.print((Statement) stmt));
         }
         return builder.toString();
     }

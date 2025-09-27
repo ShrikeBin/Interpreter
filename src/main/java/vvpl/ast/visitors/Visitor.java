@@ -1,11 +1,11 @@
 package vvpl.ast.visitors;
 
 /**
- * @author Sandra Greiner
+ * @author Jan Ryszkiewicz
  * @version CompilerConstruction FT 2025
  */
 
-public interface ExprVisitor<T> {
+public interface Visitor<T> {
 
  
 }

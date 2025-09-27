@@ -3,7 +3,7 @@ package vvpl.parse;
 import java.util.ArrayList;
 import java.util.List;
 
-import vvpl.ast.Stmt;
+import vvpl.ast.Statement;
 import vvpl.scan.Token;
 
 /**
@@ -11,7 +11,8 @@ import vvpl.scan.Token;
  * @version CompilerConstruction FT 2025
  */
 
-public class Parser {
+public class Parser 
+{
 
     private List<Token> tokens;
    
@@ -19,8 +20,8 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public List<Stmt> parse() {
-        List<Stmt> statements = new ArrayList<>();
+    public List<Statement> parse() {
+        List<Statement> statements = new ArrayList<>();
        
         return statements;
     }
