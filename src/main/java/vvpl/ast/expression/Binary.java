@@ -4,7 +4,7 @@ import vvpl.ast.visitors.Visitor;
 import vvpl.scan.Token;
 import vvpl.ast.*;
 
-public class Binary 
+public class Binary extends Expression
 {
     public final Expression left; 
     public final Token operator; 
@@ -17,6 +17,7 @@ public class Binary
         this.right = right; 
     }
 
+    @Override
     public <T> T accept(Visitor<T> visitor) 
     { 
         return visitor.visitBinaryExpr(this); 

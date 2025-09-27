@@ -14,9 +14,9 @@ public class Call extends Expression
     public final Expression primary; // may have type
     public final List<Expression> args;
 
-    public Call(Expression callee, Token paren, List<Expression> args) 
+    public Call(Expression primary, List<Expression> args) 
     {
-        this.primary = callee;
+        this.primary = primary;
         this.args = args;
     }
 
