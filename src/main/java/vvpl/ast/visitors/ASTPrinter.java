@@ -7,7 +7,7 @@ import vvpl.ast.Statement;
  * @version CompilerConstruction FT 2025
  */
 
-public class ASTPrinter implements Visitor<String> 
+public class ASTPrinter
 {
   public String print(Statement stmt) 
   {
