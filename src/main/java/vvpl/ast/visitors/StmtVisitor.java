@@ -1,4 +1,4 @@
-package dk.sdu.imada.teaching.compiler.fs25.vvpl.ast.visitors;
+package vvpl.ast.visitors;
 
 
 /**

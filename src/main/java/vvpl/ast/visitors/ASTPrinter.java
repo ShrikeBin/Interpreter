@@ -1,6 +1,6 @@
-package dk.sdu.imada.teaching.compiler.fs25.vvpl.ast.visitors;
+package vvpl.ast.visitors;
 
-import dk.sdu.imada.teaching.compiler.fs25.vvpl.ast.Stmt;
+import vvpl.ast.Stmt;
 
 /**
  * @author Sandra Greiner

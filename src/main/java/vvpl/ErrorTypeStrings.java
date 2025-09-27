@@ -1,4 +1,5 @@
-package dk.sdu.imada.teaching.compiler.fs25.vvpl;
+package vvpl;
+
 
 /**
  * @author Sandra Greiner

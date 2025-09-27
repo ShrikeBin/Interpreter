@@ -6,8 +6,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import dk.sdu.imada.teaching.compiler.fs25.vvpl.scan.Scanner;
-import dk.sdu.imada.teaching.compiler.fs25.vvpl.scan.Token;
+import vvpl.scan.Scanner;
+import vvpl.scan.Token;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;

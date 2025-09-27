@@ -1,10 +1,10 @@
-package dk.sdu.imada.teaching.compiler.fs25.vvpl.parse;
+package vvpl.parse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import dk.sdu.imada.teaching.compiler.fs25.vvpl.ast.Stmt;
-import dk.sdu.imada.teaching.compiler.fs25.vvpl.scan.Token;
+import vvpl.ast.Stmt;
+import vvpl.scan.Token;
 
 /**
  * @author Sandra Greiner
