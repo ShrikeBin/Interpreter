@@ -149,15 +149,15 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitLiteralExpr(Literal expr) {
-        builder.append(expr.value.lexeme)
-               .append("\n");
+        builder.append("LITERAL\n");
+        printToken(expr.value, true);
         return null;
     }
 
     @Override
     public Void visitVariableExpr(Variable expr) {
-        builder.append(expr.name.lexeme)
-               .append("\n");
+        builder.append("VARIABLE\n");
+        printToken(expr.name, true);
         return null;
     }
 
