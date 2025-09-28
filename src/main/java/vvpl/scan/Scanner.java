@@ -96,6 +96,7 @@ public class Scanner
 		char c = advance();
 		switch (c) 
 		{
+			// Single characters
 			case '(': addToken(TokenType.LEFT_PAREN, "("); break;
 			case ')': addToken(TokenType.RIGHT_PAREN, ")"); break;
 			case '{': addToken(TokenType.LEFT_BRACE, "{"); break;
@@ -103,7 +104,7 @@ public class Scanner
 			case ',': addToken(TokenType.COMMA, ","); break;
 			case ';': addToken(TokenType.SEMICOLON, ";"); break;
 
-			// Additional I guess ?
+			// Multi characters and arithmetic
 			case '!': if (match('=')) addToken(TokenType.NOT_EQUALS, "!="); else addToken(TokenType.NOT,"!"); break;
 			case '=': if (match('=')) addToken(TokenType.EQUALS, "=="); else addToken(TokenType.ASSIGN, "="); break;
 			case '<': if (match('=')) addToken(TokenType.LESS_EQUAL, "<="); else addToken(TokenType.LESS, "<"); break;
@@ -131,6 +132,7 @@ public class Scanner
 				line++;
 				break;
 
+			// literals
 			case '"':
 				string();
 				break;
@@ -150,15 +152,9 @@ public class Scanner
 			String text = source.substring(start, current);
 	
 			TokenType type = keywords.get(text);
-			if (type == null) 
-			{
-				type = TokenType.ID;
-				addToken(type, text, null);
-			}
-			else 
-			{
-				addToken(type, text);
-			}
+			if (type == null) type = TokenType.ID;
+			
+			addToken(type, text);
 		}
 		else if(isDigit(c))
 		{

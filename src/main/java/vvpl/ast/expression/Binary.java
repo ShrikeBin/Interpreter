@@ -6,14 +6,14 @@ import vvpl.ast.*;
 
 public class Binary extends Expression
 {
+    public final Token operator;
     public final Expression left; 
-    public final Token operator; 
     public final Expression right;
 
-    public Binary(Expression left, Token operator, Expression right) 
-    { 
-        this.left = left; 
+    public Binary(Token operator, Expression left, Expression right) 
+    {
         this.operator = operator; 
+        this.left = left; 
         this.right = right; 
     }
 

@@ -42,6 +42,8 @@ public interface Visitor<T>
     T visitUnaryExpr(Unary expr);
     T visitCallExpr(Call expr);
     T visitBinaryExpr(Binary expr);
+    T visitLiteralExpr(Literal expr);
+    T visitVariableExpr(Variable expr);
 
     // Statement Visitors
     T visitPrintStmt(Print stmt);
@@ -52,6 +54,7 @@ public interface Visitor<T>
 
     // Function Visitors
     T visitFuncDecl(FuncDecl decl);
+    T visitParamDecl(Param decl);
     T visitReturnStmt(Return stmt);
 
     // Type Visitors

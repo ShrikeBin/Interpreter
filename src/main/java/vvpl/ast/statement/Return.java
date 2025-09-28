@@ -3,7 +3,7 @@ package vvpl.ast.statement;
 import vvpl.ast.visitors.Visitor;
 import vvpl.ast.*;
 
-public final class Return 
+public final class Return extends Statement
 {
     public final Expression value;
 

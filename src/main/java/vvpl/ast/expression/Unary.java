@@ -4,7 +4,7 @@ import vvpl.ast.visitors.Visitor;
 import vvpl.scan.Token;
 import vvpl.ast.*;
 
-public class Unary 
+public class Unary extends Expression
 {
     public final Token operator; 
     public final Expression right;
