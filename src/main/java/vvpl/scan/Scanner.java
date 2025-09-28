@@ -287,11 +287,6 @@ public class Scanner
 		addToken(type, lexeme, null);
 	}
 
-	private void addToken(TokenType type) 
-	{
-		addToken(type, "", null);
-	}
-
 	private boolean isDigit(char c) 
 	{
     	return c >= '0' && c <= '9';

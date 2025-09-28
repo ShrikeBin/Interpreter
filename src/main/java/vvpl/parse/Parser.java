@@ -84,7 +84,7 @@ public class Parser
         if (match(TokenType.RIGHT_PAREN)) return params;
         params.add(param());
         while (!check(TokenType.RIGHT_PAREN) && !isAtEnd()) {
-            consume(TokenType.COMMA, "Expected ',' after argument.");
+            consume(TokenType.COMMA, "Expected ',' after parameter.");
             params.add(param());
         }
         return params;
@@ -230,17 +230,51 @@ public class Parser
             Expression right = unary();
             return new Unary(op, right);
         }
-        return primary(); // skipping call for now
+        return cast();
+    }
+
+    private Expression cast() throws ParseError {
+        if (match(TokenType.CAST)) {
+            Token type = consume(new TokenType[]{TokenType.NUMBER_TYPE, TokenType.STRING_TYPE, TokenType.BOOL_TYPE}, "Expected casted type.");
+            return new Cast(type, primary());
+        }
+        return primary();
     }
 
     private Expression primary() throws ParseError {
-        if (check(TokenType.ID)) return new Variable(advance());
-        if (check(TokenType.NUMBER, TokenType.STRING, TokenType.TRUE, TokenType.FALSE))
+        if (check(TokenType.NUMBER, TokenType.STRING, TokenType.TRUE, TokenType.FALSE)) {
             return new Literal(advance());
+        }
+        if (check(TokenType.ID)) {
+            if (checkAhead(TokenType.LEFT_PAREN)) {
+                return call();
+            } else {
+                return new Variable(advance());
+            }
+        }
         consume(TokenType.LEFT_PAREN, "Expected expression.");
         Expression expr = expression();
         consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
         return expr;
+    }
+
+    private Expression call() {
+        Token ID = advance();
+        consume(TokenType.RIGHT_PAREN, "Expected '(' before call arguments.");
+        List<Expression> args = args();
+        consume(TokenType.RIGHT_PAREN, "Expected ')' after call arguments.");
+        return new Call(ID, args);
+    }
+
+    private List<Expression> args() throws ParseError {
+        List<Expression> args = new LinkedList<>();
+        if (match(TokenType.RIGHT_PAREN)) return args;
+        args.add(expression());
+        while (!check(TokenType.RIGHT_PAREN) && !isAtEnd()) {
+            consume(TokenType.COMMA, "Expected ',' after argument.");
+            args.add(expression());
+        }
+        return args;
     }
 
     private boolean match(TokenType... types) {

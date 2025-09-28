@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import vvpl.ast.Statement;
+import vvpl.ast.Declaration;
 import vvpl.ast.visitors.ASTPrinter;
 import vvpl.parse.Parser;
 import vvpl.scan.Scanner;
@@ -44,13 +44,10 @@ public class ParserTest {
      * file
      * sample-ast-expected.out in the test resources
      */
-    protected String getASTString(List<?> statements) {
-        StringBuilder builder = new StringBuilder();
+    // modified to match our printer - Nel
+    protected String getASTString(List<Declaration> program) {
         ASTPrinter printer = new ASTPrinter();
-        for (var stmt : statements) {
-            builder.append(printer.print((Statement) stmt));
-        }
-        return builder.toString();
+        return printer.print(program);
     }
 
     @Test
@@ -59,9 +56,9 @@ public class ParserTest {
         List<Token> tokens = scanner.scanTokens();
 
         Parser parser = new Parser(tokens);
-        List<?> statements = parser.parse();
+        List<Declaration> program = parser.parse();
 
-        String fileActual = getASTString(statements);
+        String fileActual = getASTString(program);
         List<String> fileActualLines = Arrays.asList(fileActual.split(System.lineSeparator()));
 
         try {

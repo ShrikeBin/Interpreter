@@ -3,6 +3,7 @@ package vvpl.ast.expression;
 import java.util.List;
 
 import vvpl.ast.visitors.Visitor;
+import vvpl.scan.Token;
 import vvpl.ast.*;
 
 // That is the bottom most class I think
@@ -11,12 +12,12 @@ import vvpl.ast.*;
 public class Call extends Expression
 {
     // public final Token name
-    public final Expression primary; // may have type
+    public final Token ID; // may have type
     public final List<Expression> args;
 
-    public Call(Expression primary, List<Expression> args) 
+    public Call(Token ID, List<Expression> args) 
     {
-        this.primary = primary;
+        this.ID = ID;
         this.args = args;
     }
 

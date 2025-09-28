@@ -1,7 +1,6 @@
 package vvpl.ast.visitors;
 
 import vvpl.ast.statement.*;
-import vvpl.ast.*;
 import vvpl.ast.expression.*;
 import vvpl.ast.variable.*;
 import vvpl.ast.function.*;
@@ -44,6 +43,7 @@ public interface Visitor<T>
     T visitBinaryExpr(Binary expr);
     T visitLiteralExpr(Literal expr);
     T visitVariableExpr(Variable expr);
+    T visitCastExpr(Cast expr);
 
     // Statement Visitors
     T visitPrintStmt(Print stmt);
@@ -56,7 +56,4 @@ public interface Visitor<T>
     T visitFuncDecl(FuncDecl decl);
     T visitParamDecl(Param decl);
     T visitReturnStmt(Return stmt);
-
-    // Type Visitors
-    T visitType(Type type);
 }

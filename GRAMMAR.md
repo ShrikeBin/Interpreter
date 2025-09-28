@@ -1,5 +1,7 @@
 # GRAMMAR.md
 
+## Slight changes until Sandra texts me back (marked 4now):
+
 program       := decl* EOF ;
 
 decl          := funcDecl
@@ -9,6 +11,8 @@ decl          := funcDecl
 varDecl       := "variable" ID "has_type" type ("is" expr)? ";" ;
 
 funcDecl      := "function" function ;
+
+type          := "Number" | "String" | "Bool" ;
 
 function      := ID "(" params? ")" ("has_type" type)? block ;
 
@@ -51,11 +55,12 @@ term          := operator "(" term term ")" | unary ;
 operator      := "add" | "subtract" | "divide" | "multiply" ;
 
 unary         := ("NOT" | "-") unary | call ;
+unary4now     := ("NOT" | "-") unary | primary ;
 
 call          := primary "(" args? ")" ;
+call4now      := ID "(" args? ")" ;
 
 args          := expr ("," expr)* ;
 
 primary       := ("cast_to" type)? ("true" | "false" | NUMBER | STRING | ID | "(" expr ")") ;
-
-type          := "Number" | "String" | "Bool" ;
+primary4now   := ("cast_to" type)? ("true" | "false" | call | NUMBER | STRING | ID | "(" expr ")") ;
