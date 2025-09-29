@@ -46,6 +46,7 @@ public interface Visitor<T>
     T visitCastExpr(Cast expr);
 
     // Statement Visitors
+    T visitExprStmt(Expr stmt);
     T visitPrintStmt(Print stmt);
     T visitBlockStmt(Block stmt);
     T visitIfStmt(If stmt);

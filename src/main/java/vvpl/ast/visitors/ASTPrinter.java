@@ -62,6 +62,13 @@ public class ASTPrinter implements Visitor<Void>
     }
 
     @Override
+    public Void visitExprStmt(Expr stmt) {
+        builder.append("EXPRESSION\n");
+        printDeclaration(stmt.expr, true);
+        return null;
+    }
+
+    @Override
     public Void visitIfStmt(If stmt) {
         builder.append("IF\n");
         printDeclaration(stmt.condition, false);
@@ -164,7 +171,7 @@ public class ASTPrinter implements Visitor<Void>
     @Override
     public Void visitCallExpr(Call expr) {
         builder.append("CALL\n");
-        printToken(expr.ID, expr.args.size() == 0);
+        printDeclaration(expr.ID, expr.args.size() == 0);
         for (int i = 0; i < expr.args.size(); ++i) {
             printDeclaration(expr.args.get(i), i == expr.args.size() - 1);
         }

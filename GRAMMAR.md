@@ -1,7 +1,5 @@
 # GRAMMAR.md
 
-## Slight changes until Sandra texts me back (marked 4now):
-
 program       := decl* EOF ;
 
 decl          := funcDecl
@@ -55,12 +53,9 @@ term          := operator "(" term term ")" | unary ;
 operator      := "add" | "subtract" | "divide" | "multiply" ;
 
 unary         := ("NOT" | "-") unary | call ;
-unary4now     := ("NOT" | "-") unary | primary ;
 
-call          := primary "(" args? ")" ;
-call4now      := ID "(" args? ")" ;
+call          := primary ("(" args? ")")? ;
 
 args          := expr ("," expr)* ;
 
 primary       := ("cast_to" type)? ("true" | "false" | NUMBER | STRING | ID | "(" expr ")") ;
-primary4now   := ("cast_to" type)? ("true" | "false" | call | NUMBER | STRING | ID | "(" expr ")") ;

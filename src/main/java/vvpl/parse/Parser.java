@@ -230,6 +230,16 @@ public class Parser
             Expression right = unary();
             return new Unary(op, right);
         }
+        return call();
+    }
+
+    private Expression call() {
+        Expression ID = expression(); // ID?
+        if (match(TokenType.LEFT_PAREN)) { // 4now: greedy with parenthesis
+            List<Expression> args = args();
+            consume(TokenType.RIGHT_PAREN, "Expected ')' after call arguments.");
+            return new Call(ID, args);
+        }
         return cast();
     }
 
@@ -242,28 +252,13 @@ public class Parser
     }
 
     private Expression primary() throws ParseError {
-        if (check(TokenType.NUMBER, TokenType.STRING, TokenType.TRUE, TokenType.FALSE)) {
+        if (check(TokenType.ID)) return new Variable(advance());
+        if (check(TokenType.NUMBER, TokenType.STRING, TokenType.TRUE, TokenType.FALSE))
             return new Literal(advance());
-        }
-        if (check(TokenType.ID)) {
-            if (checkAhead(TokenType.LEFT_PAREN)) {
-                return call();
-            } else {
-                return new Variable(advance());
-            }
-        }
         consume(TokenType.LEFT_PAREN, "Expected expression.");
         Expression expr = expression();
         consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
         return expr;
-    }
-
-    private Expression call() {
-        Token ID = advance();
-        consume(TokenType.RIGHT_PAREN, "Expected '(' before call arguments.");
-        List<Expression> args = args();
-        consume(TokenType.RIGHT_PAREN, "Expected ')' after call arguments.");
-        return new Call(ID, args);
     }
 
     private List<Expression> args() throws ParseError {
