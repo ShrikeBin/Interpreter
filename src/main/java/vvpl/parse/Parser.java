@@ -154,7 +154,7 @@ public class Parser
     private Statement expressionStmt() throws ParseError {
         Expression expr = expression();
         consume(TokenType.SEMICOLON, "Expected ';' after expression.");
-        return expr;
+        return new Expr(expr);
     }
 
     // Expressions: assignment -> or
@@ -234,13 +234,13 @@ public class Parser
     }
 
     private Expression call() {
-        Expression ID = expression(); // ID?
+        Expression expr = cast(); // ID?
         if (match(TokenType.LEFT_PAREN)) { // 4now: greedy with parenthesis
             List<Expression> args = args();
             consume(TokenType.RIGHT_PAREN, "Expected ')' after call arguments.");
-            return new Call(ID, args);
+            return new Call(expr, args);
         }
-        return cast();
+        return expr;
     }
 
     private Expression cast() throws ParseError {
