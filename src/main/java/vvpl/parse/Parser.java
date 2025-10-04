@@ -230,11 +230,11 @@ public class Parser
             Expression right = unary();
             return new Unary(op, right);
         }
-        return call();
+        return cast(); // 4now: skip function call parsing, resolve with scoping later
     }
 
     private Expression call() {
-        Expression expr = cast(); // ID?
+        Expression expr = cast();
         if (match(TokenType.LEFT_PAREN)) { // 4now: greedy with parenthesis
             List<Expression> args = args();
             consume(TokenType.RIGHT_PAREN, "Expected ')' after call arguments.");
