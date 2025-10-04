@@ -5,3 +5,9 @@
 - *Nel Skowronek*
 - *Jan Ryszkiewicz*
 
+## Changes made in tests:
+
+### In scanner tests:
+
+- `IDENTIFIER` -> `ID`
+- `PLUS` -> `ADD`

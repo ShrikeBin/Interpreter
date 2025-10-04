@@ -1,5 +1,5 @@
 <VAR,variable> Literal: null, Line: 5
-<IDENTIFIER,b> Literal: null, Line: 5
+<ID,b> Literal: null, Line: 5
 <TYPE_DEF,has_type> Literal: null, Line: 5
 <BOOL_TYPE,Bool> Literal: null, Line: 5
 <ASSIGN,is> Literal: null, Line: 5
@@ -7,7 +7,7 @@
 <SEMICOLON,;> Literal: null, Line: 5
 
 <VAR,variable> Literal: null, Line: 6
-<IDENTIFIER,number1> Literal: null, Line: 6
+<ID,number1> Literal: null, Line: 6
 <TYPE_DEF,has_type> Literal: null, Line: 6
 <NUMBER_TYPE,Number> Literal: null, Line: 6
 <ASSIGN,is> Literal: null, Line: 6
@@ -15,7 +15,7 @@
 <SEMICOLON,;> Literal: null, Line: 6
 
 <VAR,variable> Literal: null, Line: 7
-<IDENTIFIER,number2> Literal: null, Line: 7
+<ID,number2> Literal: null, Line: 7
 <TYPE_DEF,has_type> Literal: null, Line: 7
 <NUMBER_TYPE,Number> Literal: null, Line: 7
 <ASSIGN,is> Literal: null, Line: 7
@@ -24,7 +24,7 @@
 <SEMICOLON,;> Literal: null, Line: 7
 
 <VAR,variable> Literal: null, Line: 8
-<IDENTIFIER,numberFloat> Literal: null, Line: 8
+<ID,numberFloat> Literal: null, Line: 8
 <TYPE_DEF,has_type> Literal: null, Line: 8
 <NUMBER_TYPE,Number> Literal: null, Line: 8
 <ASSIGN,is> Literal: null, Line: 8
@@ -32,7 +32,7 @@
 <SEMICOLON,;> Literal: null, Line: 8
 
 <VAR,variable> Literal: null, Line: 9
-<IDENTIFIER,someName> Literal: null, Line: 9
+<ID,someName> Literal: null, Line: 9
 <TYPE_DEF,has_type> Literal: null, Line: 9
 <STRING_TYPE,String> Literal: null, Line: 9
 <ASSIGN,is> Literal: null, Line: 9
@@ -40,21 +40,21 @@
 <SEMICOLON,;> Literal: null, Line: 9
 
 <VAR,variable> Literal: null, Line: 10
-<IDENTIFIER,_only_declared> Literal: null, Line: 10
+<ID,_only_declared> Literal: null, Line: 10
 <TYPE_DEF,has_type> Literal: null, Line: 10
 <STRING_TYPE,String> Literal: null, Line: 10
 <SEMICOLON,;> Literal: null, Line: 10
 
-<PLUS,add> Literal: null, Line: 16
+<ADD,add> Literal: null, Line: 16
 <LEFT_PAREN,(> Literal: null, Line: 16
-<IDENTIFIER,number1> Literal: null, Line: 16
-<IDENTIFIER,numberFloat> Literal: null, Line: 16
+<ID,number1> Literal: null, Line: 16
+<ID,numberFloat> Literal: null, Line: 16
 <RIGHT_PAREN,)> Literal: null, Line: 16
 <SEMICOLON,;> Literal: null, Line: 16
 
-<IDENTIFIER,number1> Literal: null, Line: 17
+<ID,number1> Literal: null, Line: 17
 <EQUALS,EQUALS> Literal: null, Line: 17
-<IDENTIFIER,number2> Literal: null, Line: 17
+<ID,number2> Literal: null, Line: 17
 <SEMICOLON,;> Literal: null, Line: 17
 
 <NOT,NOT> Literal: null, Line: 18
@@ -67,7 +67,7 @@
 <SEMICOLON,;> Literal: null, Line: 19
 
 <VAR,variable> Literal: null, Line: 20
-<IDENTIFIER,min> Literal: null, Line: 20
+<ID,min> Literal: null, Line: 20
 <TYPE_DEF,has_type> Literal: null, Line: 20
 <NUMBER_TYPE,Number> Literal: null, Line: 20
 <ASSIGN,is> Literal: null, Line: 20
@@ -75,31 +75,31 @@
 <SEMICOLON,;> Literal: null, Line: 20
 
 <VAR,variable> Literal: null, Line: 21
-<IDENTIFIER,max> Literal: null, Line: 21
+<ID,max> Literal: null, Line: 21
 <TYPE_DEF,has_type> Literal: null, Line: 21
 <NUMBER_TYPE,Number> Literal: null, Line: 21
 <SEMICOLON,;> Literal: null, Line: 21
 
-<IDENTIFIER,max> Literal: null, Line: 22
+<ID,max> Literal: null, Line: 22
 <ASSIGN,is> Literal: null, Line: 22
-<PLUS,add> Literal: null, Line: 22
+<ADD,add> Literal: null, Line: 22
 <LEFT_PAREN,(> Literal: null, Line: 22
-<IDENTIFIER,number1> Literal: null, Line: 22
-<IDENTIFIER,number2> Literal: null, Line: 22
+<ID,number1> Literal: null, Line: 22
+<ID,number2> Literal: null, Line: 22
 <RIGHT_PAREN,)> Literal: null, Line: 22
 <SEMICOLON,;> Literal: null, Line: 22
 
 <VAR,variable> Literal: null, Line: 23
-<IDENTIFIER,average> Literal: null, Line: 23
+<ID,average> Literal: null, Line: 23
 <TYPE_DEF,has_type> Literal: null, Line: 23
 <NUMBER_TYPE,Number> Literal: null, Line: 23
 <ASSIGN,is> Literal: null, Line: 23
 <DIV,divide> Literal: null, Line: 23
 <LEFT_PAREN,(> Literal: null, Line: 23
-<PLUS,add> Literal: null, Line: 23
+<ADD,add> Literal: null, Line: 23
 <LEFT_PAREN,(> Literal: null, Line: 23
-<IDENTIFIER,min> Literal: null, Line: 23
-<IDENTIFIER,max> Literal: null, Line: 23
+<ID,min> Literal: null, Line: 23
+<ID,max> Literal: null, Line: 23
 <RIGHT_PAREN,)> Literal: null, Line: 23
 <NUMBER,2> Literal: 2.0, Line: 23
 <RIGHT_PAREN,)> Literal: null, Line: 23
@@ -117,9 +117,9 @@
 <RIGHT_BRACE,}> Literal: null, Line: 32
 <IF,if> Literal: null, Line: 34
 <LEFT_PAREN,(> Literal: null, Line: 34
-<IDENTIFIER,number1> Literal: null, Line: 34
+<ID,number1> Literal: null, Line: 34
 <EQUALS,EQUALS> Literal: null, Line: 34
-<IDENTIFIER,number2> Literal: null, Line: 34
+<ID,number2> Literal: null, Line: 34
 <RIGHT_PAREN,)> Literal: null, Line: 34
 <LEFT_BRACE,{> Literal: null, Line: 34
 <PRINT,write_to_console> Literal: null, Line: 35
@@ -137,13 +137,13 @@
 <LEFT_BRACE,{> Literal: null, Line: 40
 <IF,if> Literal: null, Line: 41
 <LEFT_PAREN,(> Literal: null, Line: 41
-<IDENTIFIER,number1> Literal: null, Line: 41
+<ID,number1> Literal: null, Line: 41
 <EQUALS,EQUALS> Literal: null, Line: 41
-<IDENTIFIER,someName> Literal: null, Line: 41
+<ID,someName> Literal: null, Line: 41
 <RIGHT_PAREN,)> Literal: null, Line: 41
 <LEFT_BRACE,{> Literal: null, Line: 41
 <PRINT,write_to_console> Literal: null, Line: 42
-<IDENTIFIER,number1> Literal: null, Line: 42
+<ID,number1> Literal: null, Line: 42
 <SEMICOLON,;> Literal: null, Line: 42
 
 <RIGHT_BRACE,}> Literal: null, Line: 43
@@ -155,7 +155,7 @@
 
 <RIGHT_BRACE,}> Literal: null, Line: 45
 <VAR,variable> Literal: null, Line: 47
-<IDENTIFIER,a> Literal: null, Line: 47
+<ID,a> Literal: null, Line: 47
 <TYPE_DEF,has_type> Literal: null, Line: 47
 <NUMBER_TYPE,Number> Literal: null, Line: 47
 <ASSIGN,is> Literal: null, Line: 47
@@ -164,25 +164,25 @@
 
 <WHILE,loop_while> Literal: null, Line: 48
 <LEFT_PAREN,(> Literal: null, Line: 48
-<IDENTIFIER,a> Literal: null, Line: 48
+<ID,a> Literal: null, Line: 48
 <LESS,LESS> Literal: null, Line: 48
 <NUMBER,10> Literal: 10.0, Line: 48
 <RIGHT_PAREN,)> Literal: null, Line: 48
 <LEFT_BRACE,{> Literal: null, Line: 48
 <PRINT,write_to_console> Literal: null, Line: 49
-<IDENTIFIER,a> Literal: null, Line: 49
+<ID,a> Literal: null, Line: 49
 <SEMICOLON,;> Literal: null, Line: 49
 
-<IDENTIFIER,a> Literal: null, Line: 50
+<ID,a> Literal: null, Line: 50
 <ASSIGN,is> Literal: null, Line: 50
-<PLUS,add> Literal: null, Line: 50
+<ADD,add> Literal: null, Line: 50
 <LEFT_PAREN,(> Literal: null, Line: 50
-<IDENTIFIER,a> Literal: null, Line: 50
+<ID,a> Literal: null, Line: 50
 <NUMBER,1> Literal: 1.0, Line: 50
 <RIGHT_PAREN,)> Literal: null, Line: 50
 <SEMICOLON,;> Literal: null, Line: 50
 
-<IDENTIFIER,a> Literal: null, Line: 51
+<ID,a> Literal: null, Line: 51
 <ASSIGN,is> Literal: null, Line: 51
 <SUB,subtract> Literal: null, Line: 51
 <LEFT_PAREN,(> Literal: null, Line: 51

@@ -16,8 +16,8 @@ import vvpl.scan.Token;
 
 public class ASTPrinter implements Visitor<Void>
 {
-    private final StringBuilder builder = new StringBuilder();
-    private final StringBuilder prefix = new StringBuilder();
+    protected final StringBuilder builder = new StringBuilder();
+    protected final StringBuilder prefix = new StringBuilder();
 
     public String print(List<Declaration> program) {
         builder.append("Program\n");
@@ -179,14 +179,14 @@ public class ASTPrinter implements Visitor<Void>
         return null;
     }
 
-    private void printToken(Token token, boolean isLast) {
+    protected void printToken(Token token, boolean isLast) {
         builder.append(prefix)
                .append(isLast ? "└── " : "├── ")
                .append(token.lexeme)
                .append("\n");
     }
 
-    private void printDeclaration(Declaration decl, boolean isLast) {
+    protected void printDeclaration(Declaration decl, boolean isLast) {
         builder.append(prefix);
         if (isLast) {
             builder.append("└── ");

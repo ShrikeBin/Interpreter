@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import vvpl.ast.Declaration;
-import vvpl.ast.visitors.ASTPrinter;
+import vvpl.ast.visitors.BoringASTPrinter;
 import vvpl.parse.Parser;
 import vvpl.scan.Scanner;
 import vvpl.scan.Token;
@@ -48,8 +48,13 @@ public class ParserTest {
      * to match AST implementation
      */
     protected String getASTString(List<Declaration> program) {
-        ASTPrinter printer = new ASTPrinter();
-        return printer.print(program);
+        StringBuilder builder = new StringBuilder();
+        BoringASTPrinter printer = new BoringASTPrinter();
+        for (Declaration decl : program) {
+            builder.append(printer.print(decl));
+        }
+        System.out.print(builder.toString());
+        return builder.toString();
     }
 
     @Test
