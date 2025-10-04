@@ -53,7 +53,6 @@ public class ParserTest {
         for (Declaration decl : program) {
             builder.append(printer.print(decl));
         }
-        System.out.print(builder.toString());
         return builder.toString();
     }
 

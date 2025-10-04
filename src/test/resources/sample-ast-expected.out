@@ -36,7 +36,7 @@ ExprStmt
     VariableExpr
       numberFloat
 ExprStmt
-  BinaryExpr
+  LogicalExpr
     VariableExpr
       number1
     EQUALS
@@ -92,7 +92,7 @@ BlockStmt
     LiteralExpr
       "Hello, SDU! This is a computer program."
 IfStmt
-  BinaryExpr
+  LogicalExpr
     VariableExpr
       number1
     EQUALS
@@ -108,7 +108,7 @@ IfStmt
         "no"
 BlockStmt
   IfStmt
-    BinaryExpr
+    LogicalExpr
       VariableExpr
         number1
       EQUALS
@@ -128,7 +128,7 @@ BlockStmt
     LiteralExpr
       1.0
   WhileStmt
-    BinaryExpr
+    LogicalExpr
       VariableExpr
         a
       LESS
@@ -154,6 +154,7 @@ BlockStmt
             LiteralExpr
               5.0
             subtract
-            LiteralExpr
-              Cast_To Number
-              "4"
+            CastExpr
+              Number
+              LiteralExpr
+                "4"
