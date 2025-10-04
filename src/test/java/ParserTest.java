@@ -43,8 +43,10 @@ public class ParserTest {
      * you can find the relevant/expected AST nodes that should be printed in the
      * file
      * sample-ast-expected.out in the test resources
+     * ---
+     * modified by: Nel Skowronek
+     * to match AST implementation
      */
-    // modified to match our printer - Nel
     protected String getASTString(List<Declaration> program) {
         ASTPrinter printer = new ASTPrinter();
         return printer.print(program);

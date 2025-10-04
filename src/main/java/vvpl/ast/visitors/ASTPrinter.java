@@ -20,7 +20,7 @@ public class ASTPrinter implements Visitor<Void>
     private final StringBuilder prefix = new StringBuilder();
 
     public String print(List<Declaration> program) {
-        builder.append("PROGRAM\n");
+        builder.append("Program\n");
         for (int i = 0; i < program.size(); i++) {
             printDeclaration(program.get(i), i == program.size() - 1);
         }
@@ -29,19 +29,20 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitVarDecl(VarDecl decl) {
-        builder.append("VAR\n");
+        builder.append("VarDecl\n");
+        printToken(decl.name, decl.initializer == null && decl.type == null);
+        if (decl.type != null) {
+            printToken(decl.type, decl.initializer == null);
+        }
         if (decl.initializer != null) {
-            printToken(decl.name, false);
             printDeclaration(decl.initializer, true);
-        } else {
-            printToken(decl.name, true);
         }
         return null;
     }
 
     @Override
     public Void visitFuncDecl(FuncDecl decl) {
-        builder.append("FUN\n");
+        builder.append("FunDecl\n");
         printToken(decl.name, false);
         for (Param param : decl.params) {
             printDeclaration(param, false);
@@ -55,7 +56,7 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitParamDecl(Param decl) {
-        builder.append("PARAM\n");
+        builder.append("Param\n");
         printToken(decl.name, false);
         printToken(decl.type, true);
         return null;
@@ -63,14 +64,14 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitExprStmt(Expr stmt) {
-        builder.append("EXPRESSION\n");
+        builder.append("ExprStmt\n");
         printDeclaration(stmt.expr, true);
         return null;
     }
 
     @Override
     public Void visitIfStmt(If stmt) {
-        builder.append("IF\n");
+        builder.append("IfStmt\n");
         printDeclaration(stmt.condition, false);
         if (stmt.elseBranch != null) {
             printDeclaration(stmt.thenBranch, false);
@@ -83,14 +84,14 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitPrintStmt(Print stmt) {
-        builder.append("PRINT\n");
+        builder.append("PrintStmt\n");
         printDeclaration(stmt.expression, true);
         return null;
     }
 
     @Override
     public Void visitBlockStmt(Block stmt) {
-        builder.append("BLOCK\n");
+        builder.append("BlockStmt\n");
         for (int i = 0; i < stmt.statements.size(); i++) {
             printDeclaration(stmt.statements.get(i), i == stmt.statements.size() - 1);
         }
@@ -99,7 +100,7 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitWhileStmt(While stmt) {
-        builder.append("WHILE\n");
+        builder.append("WhileStmt\n");
         printDeclaration(stmt.condition, false);
         printDeclaration(stmt.body, true);
         return null;
@@ -107,14 +108,14 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitReturnStmt(Return stmt) {
-        builder.append("RETURN\n");
+        builder.append("ReturnStmt\n");
         printDeclaration(stmt.value, true);
         return null;
     }
 
     @Override
     public Void visitAssignExpr(Assignment expr) {
-        builder.append("ASSIGN\n");
+        builder.append("AssignExpr\n");
         printToken(expr.ID, false);
         printDeclaration(expr.value, true);
         return null;
@@ -122,7 +123,7 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitBinaryExpr(Binary expr) {
-        builder.append("BINARY\n");
+        builder.append("BinaryExpr\n");
         printDeclaration(expr.left, false);
         printToken(expr.operator, false);
         printDeclaration(expr.right, true);
@@ -131,7 +132,7 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitLogicalExpr(Logical expr) {
-        builder.append("LOGICAL\n");
+        builder.append("LogicalExpr\n");
         printDeclaration(expr.left, false);
         printToken(expr.operator, false);
         printDeclaration(expr.right, true);
@@ -140,7 +141,7 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitUnaryExpr(Unary expr) {
-        builder.append("UNARY\n");
+        builder.append("UnaryExpr\n");
         printToken(expr.operator, false);
         printDeclaration(expr.right, true);
         return null;
@@ -148,7 +149,7 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitCastExpr(Cast expr) {
-        builder.append("CAST\n");
+        builder.append("CastExpr\n");
         printToken(expr.type, false);
         printDeclaration(expr.value, true);
         return null;
@@ -156,21 +157,21 @@ public class ASTPrinter implements Visitor<Void>
 
     @Override
     public Void visitLiteralExpr(Literal expr) {
-        builder.append("LITERAL\n");
+        builder.append("LiteralExpr\n");
         printToken(expr.value, true);
         return null;
     }
 
     @Override
     public Void visitVariableExpr(Variable expr) {
-        builder.append("VARIABLE\n");
+        builder.append("VariableExpr\n");
         printToken(expr.name, true);
         return null;
     }
 
     @Override
     public Void visitCallExpr(Call expr) {
-        builder.append("CALL\n");
+        builder.append("CallExpr\n");
         printDeclaration(expr.ID, expr.args.size() == 0);
         for (int i = 0; i < expr.args.size(); ++i) {
             printDeclaration(expr.args.get(i), i == expr.args.size() - 1);

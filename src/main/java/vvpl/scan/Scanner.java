@@ -10,8 +10,8 @@ import java.util.Map;
 /**
  * Implements a hand-written scanner with error handling and character-wise reading. 
  * 
- * @author Compiler Construction
- * @version Efterar 2025
+ * @author Jan Ryszkiewicz
+ * @version CompilerConstruction FT 2025
  * 
  */
 public class Scanner 
@@ -33,7 +33,7 @@ public class Scanner
 		keywords.put("if",               TokenType.IF);
 		keywords.put("else",             TokenType.ELSE);
 		keywords.put("loop_while",       TokenType.WHILE);
-		keywords.put("writeToConsole",   TokenType.PRINT);
+		keywords.put("write_to_console", TokenType.PRINT);
 
 		// Boolean
 		keywords.put("true",             TokenType.TRUE);
