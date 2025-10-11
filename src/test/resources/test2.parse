@@ -1,0 +1,169 @@
+Program
+├── VarDecl
+│   ├── True
+│   ├── Bool
+│   └── LiteralExpr
+│       └── false
+├── VarDecl
+│   ├── b
+│   ├── Bool
+│   └── LiteralExpr
+│       └── true
+├── VarDecl
+│   ├── no_number
+│   ├── Number
+│   └── LiteralExpr
+│       └── 0.123
+├── VarDecl
+│   ├── nr2
+│   ├── Number
+│   └── UnaryExpr
+│       ├── -
+│       └── LiteralExpr
+│           └── 123
+├── ExprStmt
+│   └── BinaryExpr
+│       ├── VariableExpr
+│       │   └── number1
+│       ├── subtract
+│       └── VariableExpr
+│           └── numberFloat
+├── ExprStmt
+│   └── BinaryExpr
+│       ├── VariableExpr
+│       │   └── number1
+│       ├── multiply
+│       └── VariableExpr
+│           └── numberFloat
+├── ExprStmt
+│   └── BinaryExpr
+│       ├── VariableExpr
+│       │   └── number1
+│       ├── divide
+│       └── VariableExpr
+│           └── numberFloat
+├── ExprStmt
+│   └── LogicalExpr
+│       ├── VariableExpr
+│       │   └── number1
+│       ├── EQUALS
+│       └── VariableExpr
+│           └── number2
+├── ExprStmt
+│   └── UnaryExpr
+│       ├── NOT
+│       └── LiteralExpr
+│           └── true
+├── ExprStmt
+│   └── LogicalExpr
+│       ├── LiteralExpr
+│       │   └── true
+│       ├── AND
+│       └── LiteralExpr
+│           └── false
+├── VarDecl
+│   ├── nr3
+│   ├── String
+│   └── BinaryExpr
+│       ├── VariableExpr
+│       │   └── nr2
+│       ├── add
+│       └── LiteralExpr
+│           └── 3.14
+├── VarDecl
+│   ├── someName
+│   ├── Number
+│   └── LiteralExpr
+│       └── 42
+├── ExprStmt
+│   └── AssignExpr
+│       ├── max
+│       └── BinaryExpr
+│           ├── VariableExpr
+│           │   └── nr1
+│           ├── add
+│           └── BinaryExpr
+│               ├── VariableExpr
+│               │   └── nr2
+│               ├── add
+│               └── VariableExpr
+│                   └── number3
+├── VarDecl
+│   ├── average
+│   ├── Number
+│   └── BinaryExpr
+│       ├── BinaryExpr
+│       │   ├── VariableExpr
+│       │   │   └── min
+│       │   ├── add
+│       │   └── VariableExpr
+│       │       └── max
+│       ├── divide
+│       └── LiteralExpr
+│           └── 2
+├── BlockStmt
+│   ├── PrintStmt
+│   │   └── LiteralExpr
+│   │       └── "Hello earth !"
+│   ├── PrintStmt
+│   │   └── LiteralExpr
+│   │       └── "Hello, SDU! This is a computer program."
+│   ├── PrintStmt
+│   │   └── LiteralExpr
+│   │       └── "hei"
+│   ├── PrintStmt
+│   │   └── LiteralExpr
+│   │       └── "The result is: "
+│   ├── PrintStmt
+│   │   └── VariableExpr
+│   │       └── number1
+│   ├── PrintStmt
+│   │   └── VariableExpr
+│   │       └── no_number
+│   ├── PrintStmt
+│   │   └── VariableExpr
+│   │       └── nr2
+│   └── PrintStmt
+│       └── VariableExpr
+│           └── nr3
+├── IfStmt
+│   ├── LogicalExpr
+│   │   ├── VariableExpr
+│   │   │   └── number1
+│   │   ├── EQUALS
+│   │   └── VariableExpr
+│   │       └── number2
+│   ├── BlockStmt
+│   │   └── PrintStmt
+│   │       └── LiteralExpr
+│   │           └── "yes"
+│   └── BlockStmt
+│       └── PrintStmt
+│           └── LiteralExpr
+│               └── "no"
+└── BlockStmt
+    ├── IfStmt
+    │   ├── LiteralExpr
+    │   │   └── false
+    │   ├── BlockStmt
+    │   │   └── PrintStmt
+    │   │       └── VariableExpr
+    │   │           └── number1
+    │   └── BlockStmt
+    │       └── IfStmt
+    │           ├── LiteralExpr
+    │           │   └── true
+    │           ├── BlockStmt
+    │           │   └── PrintStmt
+    │           │       └── VariableExpr
+    │           │           └── number2
+    │           └── BlockStmt
+    │               └── PrintStmt
+    │                   └── VariableExpr
+    │                       └── number3
+    └── BlockStmt
+        └── BlockStmt
+            └── BlockStmt
+                └── PrintStmt
+                    └── LiteralExpr
+                        └── "nested"
