@@ -5,6 +5,11 @@
 - *Nel Skowronek*
 - *Jan Ryszkiewicz*
 
+## Responsibilities:
+
+- Nel: Parser, Printer
+- Jan: Scanner, AST Classes, Tests
+
 ## Changes made in tests:
 
 ### Scanner tests:
@@ -12,12 +17,14 @@
 - `IDENTIFIER` -> `ID`
 - `PLUS` -> `ADD`
 
+More intuitive and easier to change one test than whole code.
+
 ### Parser tests:
 
 - `BinaryExpr` -> `LogicalExpr`
 
-for all comparison operators
+For all comparison operators, because they all return boolean values.
 
 - `LiteralExpr ... cast_to <type>` -> `CastExpr ... <type> ... LiteralExpr`
 
-for easier eval of AST tree later
+For easier eval of AST tree later.

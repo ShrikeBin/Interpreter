@@ -30,10 +30,8 @@ public class ASTPrinter implements Visitor<Void>
     @Override
     public Void visitVarDecl(VarDecl decl) {
         builder.append("VarDecl\n");
-        printToken(decl.name, decl.initializer == null && decl.type == null);
-        if (decl.type != null) {
-            printToken(decl.type, decl.initializer == null);
-        }
+        printToken(decl.name, false);
+        printToken(decl.type, decl.initializer == null);
         if (decl.initializer != null) {
             printDeclaration(decl.initializer, true);
         }
