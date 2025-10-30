@@ -1,0 +1,7 @@
+function poly(x has_type Number) has_type Number {
+    return add (multiply(x multiply(x x)) multiply(-3 x));
+}
+
+function printer(y has_type String) {
+    write_to_console(y);
+}

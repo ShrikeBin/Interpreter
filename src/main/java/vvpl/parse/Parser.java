@@ -75,6 +75,7 @@ public class Parser
         if (match(TokenType.TYPE_DEF)) {
             type = consume(new TokenType[]{TokenType.NUMBER_TYPE, TokenType.STRING_TYPE, TokenType.BOOL_TYPE}, "Expected return type.");
         }
+        consume(TokenType.LEFT_BRACE, "Expected { after function declaration.");
         Statement body = block();
         return new FuncDecl(name, params, type, body);
     }
