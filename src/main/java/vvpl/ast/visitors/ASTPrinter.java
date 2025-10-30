@@ -170,7 +170,7 @@ public class ASTPrinter implements Visitor<Void>
     @Override
     public Void visitCallExpr(Call expr) {
         builder.append("CallExpr\n");
-        printDeclaration(expr.ID, expr.args.size() == 0);
+        printToken(expr.ID, expr.args.size() == 0);
         for (int i = 0; i < expr.args.size(); ++i) {
             printDeclaration(expr.args.get(i), i == expr.args.size() - 1);
         }
