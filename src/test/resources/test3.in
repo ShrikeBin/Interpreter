@@ -1,7 +1,10 @@
-function poly(x has_type Number) has_type Number {
-    return add (multiply(x multiply(x x)) multiply(-3 x));
-}
-
-function printer(y has_type String) {
-    write_to_console(y);
+function fact(x has_type Number) has_type Number {
+    if(x >= 0)
+    {
+        return 1;
+    }
+    else
+    {
+        return multiply(x fact(sub(x 1)));
+    }
 }

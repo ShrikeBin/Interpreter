@@ -137,7 +137,10 @@ public class Parser
     private Statement block() throws ParseError {
         List<Declaration> declarations = new LinkedList<>();
         while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
-            declarations.add(declaration());
+            Declaration declaration = declaration();
+            if (declaration != null) {
+                declarations.add(declaration);
+            }
         }
         consume(TokenType.RIGHT_BRACE, "Expected '}' after block.");
         return new Block(declarations);
@@ -266,7 +269,7 @@ public class Parser
         List<Expression> args = new LinkedList<>();
         if (match(TokenType.RIGHT_PAREN)) return args;
         args.add(expression());
-        while (!check(TokenType.RIGHT_PAREN) && !isAtEnd()) {
+        while (!match(TokenType.RIGHT_PAREN) && !isAtEnd()) {
             consume(TokenType.COMMA, "Expected ',' after argument.");
             args.add(expression());
         }
