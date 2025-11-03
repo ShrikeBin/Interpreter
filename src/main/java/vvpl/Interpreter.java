@@ -51,6 +51,11 @@ public class Interpreter implements Visitor<Object>
 
     private void execute(Statement stmt) 
     {
+        //TODO solve this problem:
+        if(stmt instanceof Return)
+        {
+            throw new SyntaxError("Return statements can only be used inside functions.");
+        }
         stmt.accept(this);
     }
 
