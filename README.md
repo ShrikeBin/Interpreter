@@ -7,8 +7,14 @@
 
 ## Responsibilities:
 
-- Nel: Parser, Printer
-- Jan: Scanner, AST Classes, Tests
+- Nel: 
+    - Parser, 
+    - Printer
+
+- Jan: 
+    - Scanner 
+    - AST Classes
+    - Tests
 
 ## Changes made in tests:
 

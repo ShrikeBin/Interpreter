@@ -11,17 +11,21 @@ import vvpl.scan.Scanner;
 import vvpl.parse.Parser;
 import vvpl.scan.Token;
 
-public class Vvpl {
-	public static void main(String[] args) throws IOException {
+public class Vvpl 
+{
+	public static void main(String[] args) throws IOException 
+	{
 		runFile(args[0]);
 	}
 
-	private static void runFile(String path) throws IOException {
+	private static void runFile(String path) throws IOException 
+	{
 		byte[] bytes = Files.readAllBytes(Paths.get(path));
 		run(new String(bytes));
 	}
 
-	private static void run(String source) {
+	private static void run(String source) 
+	{
 		Scanner scanner = new Scanner(source);
 		List<Token> tokens = scanner.scanTokens();
 

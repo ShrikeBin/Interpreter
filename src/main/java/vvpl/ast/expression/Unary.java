@@ -15,7 +15,7 @@ public class Unary extends Expression
         this.right = right; 
     }
 
-    public  <T> T accept(Visitor<T> visitor) 
+    public <T> T accept(Visitor<T> visitor) 
     { 
         return visitor.visitUnaryExpr(this); 
     } 
