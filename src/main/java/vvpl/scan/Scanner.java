@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import vvpl.errors.ScanError;
 import vvpl.errors.ErrorHandler;
 
 /**
@@ -78,7 +79,7 @@ public class Scanner
 	}
 
 	// Scan tokens
-	public List<Token> scanTokens() 
+	public List<Token> scanTokens() throws ScanError
 	{
 		while (!isAtEnd()) 
 		{
@@ -162,7 +163,7 @@ public class Scanner
 		}
 		else
 		{
-			ErrorHandler.error(line, "Unexpected character: " + c);
+			throw error(line, "Unexpected character: ", Character.toString(c));
 		}
 	}
 
@@ -206,8 +207,7 @@ public class Scanner
 
 				if(nextLine)
 				{
-					ErrorHandler.error(line, "Strings cannot span more than 2 lines.");
-					return;
+					throw error(line, "Strings cannot span more than 2 lines.", "");
 				}
 				else
 				{
@@ -219,8 +219,7 @@ public class Scanner
 
 		if (isAtEnd()) 
 		{
-			ErrorHandler.error(line, "Unterminated string.");
-			return;
+			throw error(line, "Unterminated string.", "");
 		}
 
 		advance(); // consume the closing "
@@ -301,4 +300,10 @@ public class Scanner
 	{
 		return isAlpha(c) || isDigit(c);
 	}
+
+	private ScanError error(int line, String message, String symbol) 
+	{
+        ErrorHandler.error(line, "Scan error at '" + symbol + "': " + message);
+        return new ScanError(message);
+    }
 }

@@ -1,12 +1,10 @@
 package vvpl.interprete;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import vvpl.ast.Statement;
 import vvpl.ast.function.Param;
 import vvpl.ast.statement.Block;
-import vvpl.ast.statement.Return;
 import vvpl.errors.SyntaxError;
 import vvpl.errors.TypeError;
 
