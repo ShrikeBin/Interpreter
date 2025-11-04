@@ -1,7 +1,9 @@
 package vvpl.interprete;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import vvpl.ast.Declaration;
 import vvpl.ast.Statement;
 import vvpl.ast.function.Param;
 import vvpl.errors.TypeError;
@@ -21,7 +23,7 @@ public class Function
         this.body = body;
     }
 
-    public Object call(List<Object> args, Environment callerEnv)
+    public Object call(List<Object> args)
     {
         // create new environment for function scope
         Environment functionEnv = new Environment(null);
@@ -38,6 +40,13 @@ public class Function
             }
             functionEnv.put(paramName, argValue);
         }
+
+        //TODO This no work good
+
+        // List<Declaration> funBody = new ArrayList<>();
+        // funBody.add(body);
+        // parentInterpreter.inFunction = true; 
+        // parentInterpreter.interpret(funBody);
 
         //TODO actuall function implementation? new Interpreter?
         // Object returnValue = this.body.run(functionEnv);

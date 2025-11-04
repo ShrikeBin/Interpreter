@@ -18,6 +18,7 @@ import vvpl.errors.*;
 public class Interpreter implements Visitor<Object>
 {
     private Environment env = new Environment(null);
+    public Boolean inFunction = false;
 
     public void interpret(List<Declaration> program) throws SyntaxError, ScopeError, TypeError
     {
@@ -46,12 +47,6 @@ public class Interpreter implements Visitor<Object>
 
     private void execute(Statement stmt) 
     {
-        //TODO I'm not sure about this
-        if(stmt instanceof Return)
-        {
-            throw new SyntaxError("Return statements can only be used inside functions.");
-        }
-
         stmt.accept(this);
     }
 
@@ -205,12 +200,18 @@ public class Interpreter implements Visitor<Object>
         {
             Function function = (Function) callee;
             List<Object> arguments = new ArrayList<>();
+
             for(Expression arg : expr.args)
             {   
                 arguments.add(evaluate(arg));
             }
-            Object result = function.call(arguments, env);
+
+            Object result = function.call(arguments);
             return result;
+        }
+        else if (callee == null) 
+        {
+            throw new ScopeError("Undefined function name: " +ID);    
         }
         else
         {
@@ -419,6 +420,18 @@ public class Interpreter implements Visitor<Object>
         return null;
     }
 
+    //TODO -- be Void?
+    @Override
+    public Object visitReturnStmt(Return stmt) 
+    { 
+        if(!inFunction)
+        {
+            throw new SyntaxError("Return statements can only be used inside functions.");
+        }
+
+        return evaluate(stmt.value); 
+    }
+
     // ==== TODO - check these ====
 
     // • check that variables are declared only once in a scope and initialized
@@ -440,11 +453,6 @@ public class Interpreter implements Visitor<Object>
 
     // ==== Those are deemed unneccessary and  ====
     // ==== are sentenced to return null; jail ====
-    @Override
-    public Void visitReturnStmt(Return stmt) 
-    { 
-        return null; 
-    }
 
     @Override
     public Void visitParamDecl(Param decl) 
