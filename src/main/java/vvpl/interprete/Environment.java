@@ -3,9 +3,10 @@ package vvpl.interprete;
 import java.util.HashMap;
 import java.util.Map;
 
+import vvpl.errors.*;
+
 public class Environment 
 {
-    private static class ScopeError extends RuntimeException{ScopeError(String msg){super(msg);}}
     private final Environment parent;
     private final Map<String, Object> scope = new HashMap<>();
 

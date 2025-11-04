@@ -1,8 +1,7 @@
-package vvpl;
+package vvpl.interprete;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.lang.RuntimeException;
 
 import vvpl.ast.Declaration;
 import vvpl.ast.Statement;
@@ -12,19 +11,15 @@ import vvpl.ast.expression.*;
 import vvpl.ast.function.*;
 import vvpl.ast.statement.*;
 import vvpl.ast.variable.*;
-
 import vvpl.ast.visitors.Visitor;
-import vvpl.interprete.Environment;
-import vvpl.interprete.Function;
+import vvpl.errors.*;
 
 
 public class Interpreter implements Visitor<Object>
 {
-    private static class SyntaxError extends RuntimeException{SyntaxError(String msg){super(msg);}}
-
     private Environment env = new Environment(null);
 
-    public void interpret(List<Declaration> program)
+    public void interpret(List<Declaration> program) throws SyntaxError, ScopeError, TypeError
     {
         // ===== Global Function Scope =====
         for (Declaration decl : program) 
@@ -51,11 +46,12 @@ public class Interpreter implements Visitor<Object>
 
     private void execute(Statement stmt) 
     {
-        //TODO solve this problem:
+        //TODO I'm not sure about this
         if(stmt instanceof Return)
         {
             throw new SyntaxError("Return statements can only be used inside functions.");
         }
+
         stmt.accept(this);
     }
 
@@ -74,10 +70,9 @@ public class Interpreter implements Visitor<Object>
         if (decl.initializer != null) 
         {
             value = evaluate(decl.initializer);
-            // TODO remove this helper function -> make an inline check
             if (!typeMatch(value, decl.type.lexeme)) 
             {
-                throw new SyntaxError("Type mismatch for variable '" +
+                throw new TypeError("Type mismatch for variable '" +
                                     decl.name.lexeme + "': expected " +
                                     decl.type.lexeme + ", got " +
                                     value.getClass().getSimpleName());
@@ -106,7 +101,7 @@ public class Interpreter implements Visitor<Object>
         }
         if(!typeMatch(value, variable.getClass().getSimpleName().toLowerCase()))
         {
-            throw new SyntaxError("Type mismatch in assignment to '" + name + 
+            throw new TypeError("Type mismatch in assignment to '" + name + 
                 "': expected " + variable.getClass().getSimpleName().toLowerCase() +
                 ", got " + value.getClass().getSimpleName().toLowerCase());
         }
@@ -262,6 +257,13 @@ public class Interpreter implements Visitor<Object>
     @Override
     public Object visitVariableExpr(Variable expr) 
     { 
+        Object var = env.get(expr.name.lexeme);
+
+        if(var == null)
+        {
+            throw new ScopeError("Variable not defined: " + expr.name.lexeme);
+        }
+
         return env.get(expr.name.lexeme);
     }
 
@@ -300,7 +302,7 @@ public class Interpreter implements Visitor<Object>
             }
             else
             {
-                throw new SyntaxError("Invalid cast from Number to " + targetType);
+                throw new TypeError("Invalid cast from Number to " + targetType);
             }
         }
         else if(castedType.equals("string"))
@@ -313,12 +315,12 @@ public class Interpreter implements Visitor<Object>
                 }
                 catch(NumberFormatException e)
                 {
-                    throw new SyntaxError("Invalid cast from String to Number: " + casted);
+                    throw new TypeError("Invalid cast from String to Number: " + casted);
                 }
             }
             else
             {
-                throw new SyntaxError("Invalid cast from String to " + targetType);
+                throw new TypeError("Invalid cast from String to " + targetType);
             }
         }
         else if(castedType.equals("bool"))
@@ -329,7 +331,7 @@ public class Interpreter implements Visitor<Object>
             }
             else
             {
-                throw new SyntaxError("Invalid cast from String to " + targetType);
+                throw new TypeError("Invalid cast from String to " + targetType);
             }
         }
         else
@@ -394,7 +396,7 @@ public class Interpreter implements Visitor<Object>
         {
             throw new SyntaxError("Condition must be a Boolean");
         }
-        while((Boolean)condition) //TODO -- sanity check
+        while((Boolean)condition)
         {
             execute(stmt.body);
         }
@@ -418,7 +420,7 @@ public class Interpreter implements Visitor<Object>
     }
 
     // ==== TODO - check these ====
-    //   Valid program as it should be supported when you work in groups.
+
     // • check that variables are declared only once in a scope and initialized
     // • the global scope allows for out-of-order definitions of functions and their calls
     // • check that function statements are only introduced globally (not in Blocks)
@@ -426,6 +428,15 @@ public class Interpreter implements Visitor<Object>
     // • check that the return statement is the last executed statement in branches
     //   of function bodies; i.e., check that there are no other statements after the
     //   return in a branch.
+
+    //   Variables:
+    // • cannot be accessed from scopes outside where they have been defined.
+    // • cannot be redefined in a nested scope; i.e., a variable cannot shadow
+    //   a variable from an outer scope unless defined for the first time in a
+    //   function or as a parameter.
+    // • can only be re-defined inside a function
+
+
 
     // ==== Those are deemed unneccessary and  ====
     // ==== are sentenced to return null; jail ====
@@ -459,7 +470,7 @@ public class Interpreter implements Visitor<Object>
             case "function":
                 return value instanceof Function;
             default:
-                return true;
+                return false;
         }
     }
 }

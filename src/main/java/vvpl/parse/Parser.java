@@ -3,12 +3,12 @@ package vvpl.parse;
 import java.util.LinkedList;
 import java.util.List;
 
-import vvpl.ErrorHandler;
 import vvpl.ast.*;
 import vvpl.ast.expression.*;
 import vvpl.ast.statement.*;
 import vvpl.ast.function.*;
 import vvpl.ast.variable.*;
+import vvpl.errors.*;
 import vvpl.scan.Token;
 import vvpl.scan.TokenType;
 
@@ -19,8 +19,6 @@ import vvpl.scan.TokenType;
 
 public class Parser 
 {
-    private static class ParseError extends RuntimeException {}
-
     private List<Token> tokens;
     private int current = 0;
    
@@ -324,7 +322,7 @@ public class Parser
 
     private ParseError error(Token token, String message) {
         ErrorHandler.error(token.line, "Parse error at '" + token.lexeme + "': " + message);
-        return new ParseError();
+        return new ParseError(message);
     }
 
     private void synchronize() {

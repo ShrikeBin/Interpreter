@@ -1,11 +1,11 @@
 package vvpl.scan;
 
-import vvpl.ErrorHandler;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+
+import vvpl.errors.ErrorHandler;
 
 /**
  * Implements a hand-written scanner with error handling and character-wise reading. 

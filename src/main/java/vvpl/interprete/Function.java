@@ -4,6 +4,7 @@ import java.util.List;
 
 import vvpl.ast.Statement;
 import vvpl.ast.function.Param;
+import vvpl.errors.TypeError;
 
 public class Function 
 {
@@ -25,17 +26,43 @@ public class Function
         // create new environment for function scope
         Environment functionEnv = new Environment(null);
 
-        // bind parameters to arguments
+        // ==== Check and Bind parameters ====
         for (int i = 0; i < params.size(); i++) 
         {
-            // TODO type checking for params (if type of args[i] matches params[i].type)
+            // TODO type checking -> do i really look for lexeme?
             String paramName = params.get(i).name.lexeme;
             Object argValue = args.get(i);
+            if(!typeMatch(argValue, paramName))
+            {
+                throw new TypeError("Incorrect function parameter type for: " + paramName);
+            }
             functionEnv.put(paramName, argValue);
         }
 
+        //TODO actuall function implementation? new Interpreter?
         // Object returnValue = this.body.run(functionEnv);
         Object returnValue = null;
         return returnValue;
+    }
+
+    private boolean typeMatch(Object value, String expectedType) 
+    {
+        if (value == null) return false;
+
+        switch (expectedType) 
+        {
+            case "int":
+                return value instanceof Integer;
+            case "float":
+                return value instanceof Double;
+            case "string":
+                return value instanceof String;
+            case "bool":
+                return value instanceof Boolean;
+            case "function":
+                return value instanceof Function;
+            default:
+                return false;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package vvpl;
+package vvpl.errors;
 
 public class ErrorHandler 
 {
