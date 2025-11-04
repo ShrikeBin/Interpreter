@@ -17,7 +17,7 @@ import vvpl.errors.*;
 
 public class Interpreter implements Visitor<Object>
 {
-    private Environment env = new Environment(null);
+    public Environment env = new Environment(null);
     public Boolean inFunction = false;
 
     public void interpret(List<Declaration> program) throws SyntaxError, ScopeError, TypeError
@@ -206,7 +206,7 @@ public class Interpreter implements Visitor<Object>
                 arguments.add(evaluate(arg));
             }
 
-            Object result = function.call(arguments);
+            Object result = function.call(this, arguments);
             return result;
         }
         else if (callee == null) 
@@ -392,13 +392,17 @@ public class Interpreter implements Visitor<Object>
     @Override
     public Void visitWhileStmt(While stmt) 
     { 
-        Object condition = evaluate(stmt.condition);
-        if(!(condition instanceof Boolean))
+        while (true)
         {
-            throw new SyntaxError("Condition must be a Boolean");
-        }
-        while((Boolean)condition)
-        {
+            Object condition = evaluate(stmt.condition);
+            if(!(condition instanceof Boolean))
+            {
+                throw new SyntaxError("Condition must be a Boolean");
+            }
+            if(!(Boolean)condition)
+            {
+                break;
+            }
             execute(stmt.body);
         }
         return null;
@@ -420,16 +424,15 @@ public class Interpreter implements Visitor<Object>
         return null;
     }
 
-    //TODO -- be Void?
     @Override
-    public Object visitReturnStmt(Return stmt) 
+    public Void visitReturnStmt(Return stmt) 
     { 
         if(!inFunction)
         {
             throw new SyntaxError("Return statements can only be used inside functions.");
         }
 
-        return evaluate(stmt.value); 
+        throw new Returnable(evaluate(stmt.value)); 
     }
 
     // ==== TODO - check these ====

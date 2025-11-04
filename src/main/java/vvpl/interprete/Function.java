@@ -3,9 +3,11 @@ package vvpl.interprete;
 import java.util.ArrayList;
 import java.util.List;
 
-import vvpl.ast.Declaration;
 import vvpl.ast.Statement;
 import vvpl.ast.function.Param;
+import vvpl.ast.statement.Block;
+import vvpl.ast.statement.Return;
+import vvpl.errors.SyntaxError;
 import vvpl.errors.TypeError;
 
 public class Function 
@@ -21,9 +23,14 @@ public class Function
         this.params = params;
         this.type = type;
         this.body = body;
+
+        if(!(body instanceof Block))
+        {
+            throw new SyntaxError(name + " Function body must be a block statement.");
+        }
     }
 
-    public Object call(List<Object> args)
+    public Object call(Interpreter interpreter, List<Object> args) 
     {
         // create new environment for function scope
         Environment functionEnv = new Environment(null);
@@ -41,17 +48,28 @@ public class Function
             functionEnv.put(paramName, argValue);
         }
 
-        //TODO This no work good
+        boolean prev = interpreter.inFunction;
+        Environment prevEnv = interpreter.env;
+        interpreter.env = functionEnv;
+        interpreter.inFunction = true;
 
-        // List<Declaration> funBody = new ArrayList<>();
-        // funBody.add(body);
-        // parentInterpreter.inFunction = true; 
-        // parentInterpreter.interpret(funBody);
+        //TODO what about Void functions?
+        //TODO how to check i freturn is correct type?
 
-        //TODO actuall function implementation? new Interpreter?
-        // Object returnValue = this.body.run(functionEnv);
-        Object returnValue = null;
-        return returnValue;
+        try
+        {
+            interpreter.visitBlockStmt((Block) body);
+        } 
+        catch (Returnable ret) 
+        {
+            return ret.value;
+        }
+        finally
+        {
+            interpreter.env = prevEnv;
+            interpreter.inFunction = prev;
+        }
+        return null;
     }
 
     private boolean typeMatch(Object value, String expectedType) 
