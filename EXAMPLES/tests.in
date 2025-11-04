@@ -1,0 +1,10 @@
+variable x has_type Bool is true;
+
+function funny(x has_type Bool) {
+    x = false;
+    return 0;
+}
+
+funny(x);
+
+write_to_console x;

@@ -32,6 +32,10 @@ public class Interpreter implements Visitor<Object>
             if (decl instanceof FuncDecl) 
             {
                 FuncDecl funcDecl = (FuncDecl) decl;
+                if(funcDecl.type == null)
+                {
+                    throw new SyntaxError("Function must have a return type, not " + funcDecl.type);
+                }
                 Function function = new Function(funcDecl.name.lexeme, funcDecl.params, funcDecl.type.lexeme, funcDecl.body);
                 env.put(funcDecl.name.lexeme, function);
             }
@@ -62,6 +66,10 @@ public class Interpreter implements Visitor<Object>
     @Override
     public Void visitFuncDecl(FuncDecl decl)
     {
+        if(decl.type == null)
+        {
+            throw new SyntaxError("Function must have a return type, not: " + decl.type);
+        }
         Function function = new Function(decl.name.lexeme, decl.params, decl.type.lexeme, decl.body);
         env.put(decl.name.lexeme, function);
         return null;
