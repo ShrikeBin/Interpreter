@@ -1,7 +1,9 @@
-package vvpl.interprete;
+package vvpl.interpret;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 import vvpl.errors.*;
 
@@ -20,6 +22,11 @@ public class Environment
         if(this.scope.get(name) != null)
         {
             this.scope.put(name, obj);
+            return;
+        }
+        else if(parent != null)
+        {
+            parent.set(name, obj);
             return;
         }
         else
@@ -52,5 +59,22 @@ public class Environment
         {
             return obj;
         }
+    }
+
+    public List<Function> getFunctions()
+    {
+        List<Function> functions = new ArrayList<>();
+        for(Map.Entry<String, Object> entry : scope.entrySet())
+        {
+            if(entry.getValue() instanceof Function)
+            {
+                functions.add((Function) entry.getValue());
+            }
+        }
+        if(parent != null)
+        {
+            functions.addAll(parent.getFunctions());
+        }
+        return functions;
     }
 }

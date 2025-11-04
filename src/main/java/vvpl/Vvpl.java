@@ -7,6 +7,7 @@ import java.util.List;
 
 import vvpl.ast.Declaration;
 import vvpl.ast.visitors.ASTPrinter;
+import vvpl.interpret.Interpreter;
 import vvpl.scan.Scanner;
 import vvpl.parse.Parser;
 import vvpl.scan.Token;
@@ -40,5 +41,18 @@ public class Vvpl
 		// print the tree
 		ASTPrinter printer = new ASTPrinter();
 		System.out.println(printer.print(program));
+
+		//TODO do not interpret if there were errors during parsing/Scanning
+		Interpreter interpreter = new Interpreter();
+		try 
+		{
+			interpreter.interpret(program);
+		}
+		catch (RuntimeException error) 
+		{
+			System.err.println("Error occured: ");
+			System.err.println(error.getMessage());
+			System.err.println();
+		}
 	}
 }

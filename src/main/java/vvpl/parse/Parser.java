@@ -80,7 +80,7 @@ public class Parser
 
     private List<Param> params() throws ParseError {
         List<Param> params = new LinkedList<>();
-        if (match(TokenType.RIGHT_PAREN)) return params;
+        if (check(TokenType.RIGHT_PAREN)) return params;
         params.add(param());
         while (!check(TokenType.RIGHT_PAREN) && !isAtEnd()) {
             consume(TokenType.COMMA, "Expected ',' after parameter.");

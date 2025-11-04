@@ -1,4 +1,4 @@
-package vvpl.interprete;
+package vvpl.interpret;
 
 public class Returnable extends RuntimeException
 {

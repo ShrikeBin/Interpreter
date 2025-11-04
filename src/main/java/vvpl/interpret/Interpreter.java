@@ -1,4 +1,4 @@
-package vvpl.interprete;
+package vvpl.interpret;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -12,7 +12,11 @@ import vvpl.ast.function.*;
 import vvpl.ast.statement.*;
 import vvpl.ast.variable.*;
 import vvpl.ast.visitors.Visitor;
+
 import vvpl.errors.*;
+
+import vvpl.scan.Token;
+import vvpl.scan.TokenType;
 
 
 public class Interpreter implements Visitor<Object>
@@ -36,6 +40,11 @@ public class Interpreter implements Visitor<Object>
         // ===== Actuall Interpretation =====
         for(Declaration decl : program)
         {
+            if (decl instanceof FuncDecl) 
+            {
+                // global functions are already handled
+                continue;
+            }
             decl.accept(this);
         }
     }
@@ -65,11 +74,12 @@ public class Interpreter implements Visitor<Object>
         if (decl.initializer != null) 
         {
             value = evaluate(decl.initializer);
-            if (!typeMatch(value, decl.type.lexeme)) 
+            String type = getTypeString(decl.type.type);
+            if (!typeMatch(value, type)) 
             {
                 throw new TypeError("Type mismatch for variable '" +
                                     decl.name.lexeme + "': expected " +
-                                    decl.type.lexeme + ", got " +
+                                    type + ", got " +
                                     value.getClass().getSimpleName());
             }
         } 
@@ -78,7 +88,7 @@ public class Interpreter implements Visitor<Object>
             throw new SyntaxError("Uninitialized variable: " + decl.name.lexeme);
         }
 
-        env.set(decl.name.lexeme, value);
+        env.put(decl.name.lexeme, value);
 
         return null;
     }
@@ -211,7 +221,7 @@ public class Interpreter implements Visitor<Object>
         }
         else if (callee == null) 
         {
-            throw new ScopeError("Undefined function name: " +ID);    
+            throw new ScopeError("Undefined function name: " + ID);    
         }
         else
         {
@@ -252,7 +262,9 @@ public class Interpreter implements Visitor<Object>
     @Override
     public Object visitLiteralExpr(Literal expr) 
     { 
-        return expr.value; 
+        if(expr.value.type == TokenType.TRUE) return true;
+        if(expr.value.type == TokenType.FALSE) return false;
+        return expr.value.literal; 
     }
 
     @Override
@@ -362,7 +374,9 @@ public class Interpreter implements Visitor<Object>
         }
         else
         {
-            throw new SyntaxError("Print statement can only print strings. (or nulls)");
+            System.out.println(prinObject);
+            //TODO TEMPORARY SUPPORT ALL PRINTS CAUSE FOR SOME REASON ALL TETS WRITE NUMS TO CONSOLE
+            // throw new SyntaxError("Print statement can only print strings. (or nulls)");
         }
         return null;
     }
@@ -414,7 +428,6 @@ public class Interpreter implements Visitor<Object>
     { 
         Environment previousEnv = this.env;
         this.env = new Environment(previousEnv);
-
         for(Declaration decl : stmt.statements)
         {
             decl.accept(this);
@@ -463,20 +476,38 @@ public class Interpreter implements Visitor<Object>
         return null; 
     }
 
+    private String getTypeString(TokenType type)
+    {
+        switch(type)
+        {
+            case NUMBER_TYPE:
+                return "number";
+            case STRING_TYPE:
+                return "string";
+            case BOOL_TYPE:
+                return "boolean";
+            case FUNCTION:
+                return "function";
+            default:
+                return "unknown";
+        }
+    }
+
     private boolean typeMatch(Object value, String expectedType) 
     {
         if (value == null) return false;
 
         switch (expectedType) 
         {
-            // TBH nie pamiętam jak wgle nazywaliśmy typy
-            case "int":
+            case "number":
+                return value instanceof Double || value instanceof Integer;
+            case "integer":
                 return value instanceof Integer;
-            case "float":
+            case "double":
                 return value instanceof Double;
             case "string":
                 return value instanceof String;
-            case "bool":
+            case "boolean":
                 return value instanceof Boolean;
             case "function":
                 return value instanceof Function;
