@@ -124,6 +124,10 @@ public class Interpreter implements Visitor<Object>
         String name = expr.ID.lexeme;
 
         Object variable = env.get(name);
+        if(variable == null)
+        {
+            throw new RuntimeError("variable '" + name + "' does not exist");
+        }
         if(variable instanceof Function)
         {
             throw new SyntaxError("Cannot assign value to function: " + name);
@@ -146,7 +150,7 @@ public class Interpreter implements Visitor<Object>
         Object right = evaluate(expr.right);
 
         if (left == null || right == null)
-            throw new SyntaxError("Something brokie and we null");
+            throw new RuntimeError("Something evaluated to null in Logical expression null");
 
         if (!left.getClass().equals(right.getClass())) 
         {
@@ -308,6 +312,10 @@ public class Interpreter implements Visitor<Object>
     { 
         Object casted = evaluate(expr.value);
         String targetType = expr.type.lexeme.toLowerCase();
+        if(casted == null)
+        {
+            throw new RuntimeError("Cast evaluated to null");
+        }
         String castedType = casted.getClass().getSimpleName().toLowerCase();
 
         if(castedType.equals("integer")||castedType.equals("double"))

@@ -72,6 +72,10 @@ public class Vvpl
 		{
 			System.err.println("Syntax Error: " + error.getMessage());
 		}
+		catch (RuntimeError error) 
+		{
+			System.err.println("Runtime Error: " + error.getMessage());
+		}
 		catch (Exception error) 
 		{
 			System.err.println("[Unknown Error]:" + error.getMessage());
