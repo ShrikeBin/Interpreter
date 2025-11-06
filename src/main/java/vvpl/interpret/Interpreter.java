@@ -66,19 +66,25 @@ public class Interpreter implements Visitor<Object>
     @Override
     public Void visitFuncDecl(FuncDecl decl)
     {
-        if(decl.type == null)
-        {
-            throw new SyntaxError("Function must have a return type, not: " + decl.type);
-        }
-        Function function = new Function(decl.name.lexeme, decl.params, decl.type.lexeme, decl.body);
-        env.put(decl.name.lexeme, function);
-        return null;
+        throw new SyntaxError("We only allow global function declarations " + decl.name.lexeme + " is defined in scope");
+        // 
+        // if(decl.type == null)
+        // {
+        //     throw new SyntaxError("Function must have a return type, not: " + decl.type);
+        // }
+        // Function function = new Function(decl.name.lexeme, decl.params, decl.type.lexeme, decl.body);
+        // env.put(decl.name.lexeme, function);
+        // return null;
     }
 
     @Override
     public Void visitVarDecl(VarDecl decl)
     {
         Object value = null;
+        if(env.get(decl.name.lexeme) != null)
+        {
+            throw new ScopeError("Variable '" + decl.name.lexeme + "' is already defined in the current scope.");
+        }
         if (decl.initializer != null) 
         {
             value = evaluate(decl.initializer);
@@ -382,9 +388,8 @@ public class Interpreter implements Visitor<Object>
         }
         else
         {
-            System.out.println(prinObject);
-            //TODO TEMPORARY SUPPORT ALL PRINTS CAUSE FOR SOME REASON ALL TETS WRITE NUMS TO CONSOLE
-            // throw new SyntaxError("Print statement can only print strings. (or nulls)");
+            //System.out.println(prinObject);
+            throw new SyntaxError("Print statement can only print strings. (or nulls)");
         }
         return null;
     }
@@ -455,25 +460,6 @@ public class Interpreter implements Visitor<Object>
 
         throw new Returnable(evaluate(stmt.value)); 
     }
-
-    // ==== TODO - check these ====
-
-    // • check that variables are declared only once in a scope and initialized
-    // • the global scope allows for out-of-order definitions of functions and their calls
-    // • check that function statements are only introduced globally (not in Blocks)
-    // • check that a return statement occurs only inside a function statement
-    // • check that the return statement is the last executed statement in branches
-    //   of function bodies; i.e., check that there are no other statements after the
-    //   return in a branch.
-
-    //   Variables:
-    // • cannot be accessed from scopes outside where they have been defined.
-    // • cannot be redefined in a nested scope; i.e., a variable cannot shadow
-    //   a variable from an outer scope unless defined for the first time in a
-    //   function or as a parameter.
-    // • can only be re-defined inside a function
-
-
 
     // ==== Those are deemed unneccessary and  ====
     // ==== are sentenced to return null; jail ====

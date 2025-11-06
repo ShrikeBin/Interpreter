@@ -58,19 +58,21 @@ public class Function
         interpreter.env = functionEnv;
         interpreter.inFunction = true;
 
-        //TODO what about Void functions?
-        //TODO how to check i freturn is correct type?
-
         try
         {
             interpreter.visitBlockStmt((Block) body);
         } 
         catch (Returnable ret) 
         {
+            if(!typeMatch(ret.value, type))
+            {
+                throw new TypeError(name + " returned unexpected type: " + ret.value.getClass().getSimpleName());
+            }
             return ret.value;
         }
         finally
         {
+            //TODO do we really force return null if function is void? / or it works? xd
             interpreter.env = prevEnv;
             interpreter.inFunction = prev;
         }
@@ -112,6 +114,8 @@ public class Function
                 return value instanceof Boolean;
             case "function":
                 return value instanceof Function;
+            case "void":
+                return value == null;
             default:
                 return false;
         }
