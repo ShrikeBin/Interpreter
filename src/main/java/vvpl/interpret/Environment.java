@@ -10,7 +10,7 @@ import vvpl.errors.*;
 public class Environment 
 {
     private final Environment parent;
-    private final Map<String, Object> scope = new HashMap<>();
+    public final Map<String, Object> scope = new HashMap<>();
 
     public Environment(Environment parent)
     {

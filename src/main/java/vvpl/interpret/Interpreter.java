@@ -21,23 +21,29 @@ import vvpl.scan.TokenType;
 
 public class Interpreter implements Visitor<Object>
 {
+    boolean allowNestedFunctions = false;
+    boolean allowVariableRedeclaration = false;
+
     public Environment env = new Environment(null);
     public Boolean inFunction = false;
 
     public void interpret(List<Declaration> program) throws SyntaxError, ScopeError, TypeError
     {
         // ===== Global Function Scope =====
-        for (Declaration decl : program) 
+        if(!inFunction)
         {
-            if (decl instanceof FuncDecl) 
+            for (Declaration decl : program) 
             {
-                FuncDecl funcDecl = (FuncDecl) decl;
-                if(funcDecl.type == null)
+                if (decl instanceof FuncDecl) 
                 {
-                    throw new SyntaxError("Function must have a return type, not " + funcDecl.type);
+                    FuncDecl funcDecl = (FuncDecl) decl;
+                    if(funcDecl.type == null)
+                    {
+                        throw new SyntaxError("Function must have a return type, not " + funcDecl.type);
+                    }
+                    Function function = new Function(funcDecl.name.lexeme, funcDecl.params, funcDecl.type.lexeme, funcDecl.body);
+                    env.put(funcDecl.name.lexeme, function);
                 }
-                Function function = new Function(funcDecl.name.lexeme, funcDecl.params, funcDecl.type.lexeme, funcDecl.body);
-                env.put(funcDecl.name.lexeme, function);
             }
         }
 
@@ -66,22 +72,27 @@ public class Interpreter implements Visitor<Object>
     @Override
     public Void visitFuncDecl(FuncDecl decl)
     {
-        throw new SyntaxError("We only allow global function declarations " + decl.name.lexeme + " is defined in scope");
-        // 
-        // if(decl.type == null)
-        // {
-        //     throw new SyntaxError("Function must have a return type, not: " + decl.type);
-        // }
-        // Function function = new Function(decl.name.lexeme, decl.params, decl.type.lexeme, decl.body);
-        // env.put(decl.name.lexeme, function);
-        // return null;
+        if(!allowNestedFunctions)
+        {
+            throw new SyntaxError("We only allow global function declarations " + decl.name.lexeme + " is defined in scope");
+        }
+        else
+        {
+            if(decl.type == null)
+            {
+                throw new SyntaxError("Function must have a return type, not: " + decl.type);
+            }
+            Function function = new Function(decl.name.lexeme, decl.params, decl.type.lexeme, decl.body);
+            env.put(decl.name.lexeme, function);
+            return null;
+        }
     }
 
     @Override
     public Void visitVarDecl(VarDecl decl)
     {
         Object value = null;
-        if(env.get(decl.name.lexeme) != null)
+        if(!allowVariableRedeclaration)
         {
             throw new ScopeError("Variable '" + decl.name.lexeme + "' is already defined in the current scope.");
         }
@@ -285,7 +296,6 @@ public class Interpreter implements Visitor<Object>
     public Object visitVariableExpr(Variable expr) 
     { 
         Object var = env.get(expr.name.lexeme);
-
         if(var == null)
         {
             throw new ScopeError("Variable not defined: " + expr.name.lexeme);
@@ -298,7 +308,7 @@ public class Interpreter implements Visitor<Object>
     public Object visitCastExpr(Cast expr) 
     { 
         Object casted = evaluate(expr.value);
-        String targetType = expr.type.lexeme;
+        String targetType = expr.type.lexeme.toLowerCase();
         String castedType = casted.getClass().getSimpleName().toLowerCase();
 
         if(castedType.equals("integer")||castedType.equals("double"))
@@ -435,7 +445,6 @@ public class Interpreter implements Visitor<Object>
         return null;
     }
 
-    //TODO -- check env handling
     @Override
     public Void visitBlockStmt(Block stmt) 
     { 
@@ -491,7 +500,7 @@ public class Interpreter implements Visitor<Object>
     {
         if (value == null) return false;
 
-        switch (expectedType) 
+        switch (expectedType.toLowerCase()) 
         {
             case "number":
                 return value instanceof Double || value instanceof Integer;
@@ -505,6 +514,8 @@ public class Interpreter implements Visitor<Object>
                 return value instanceof Boolean;
             case "function":
                 return value instanceof Function;
+            case "void":
+                return value == null;
             default:
                 return false;
         }

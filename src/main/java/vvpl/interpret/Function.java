@@ -11,6 +11,8 @@ import vvpl.scan.TokenType;
 
 public class Function 
 {
+    boolean allowAccesToGlobalVariables = false;
+
     private final String name;
     private final List<Param> params;
     private final String type;
@@ -34,10 +36,16 @@ public class Function
         // create new environment for function scope
         Environment functionEnv = new Environment(null);
 
-        //TODO check if this doesnt violate some stuff
-        for (Function func : interpreter.env.getFunctions()) 
+        if(allowAccesToGlobalVariables)
         {
-            functionEnv.put(func.name, func);
+            functionEnv = new Environment(interpreter.env);
+        }
+        else
+        {
+            for (Function func : interpreter.env.getFunctions()) 
+            {
+                functionEnv.put(func.name, func);
+            } 
         }
 
         // ==== Check and Bind parameters ====
@@ -64,9 +72,13 @@ public class Function
         } 
         catch (Returnable ret) 
         {
-            if(!typeMatch(ret.value, type))
+            if(ret.value == null && !type.equals("void"))
             {
-                throw new TypeError(name + " returned unexpected type: " + ret.value.getClass().getSimpleName());
+                throw new TypeError(name + " returned unexpected null");
+            }
+            else if(!typeMatch(ret.value, type))
+            {
+                throw new TypeError(name + ", " + type + " returned unexpected type: " + ret.value.getClass().getSimpleName().toLowerCase());
             }
             return ret.value;
         }
@@ -100,7 +112,7 @@ public class Function
     {
         if (value == null) return false;
 
-        switch (expectedType) 
+        switch (expectedType.toLowerCase()) 
         {
             case "number":
                 return value instanceof Double || value instanceof Integer;
