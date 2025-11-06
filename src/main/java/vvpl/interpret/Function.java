@@ -22,8 +22,16 @@ public class Function
     { 
         this.name = name; 
         this.params = params;
-        this.type = type;
         this.body = body;
+        //TODO CHECK THIS
+        if(type == null)
+        {
+            this.type = "void";
+        }
+        else
+        {
+            this.type = type;
+        }
 
         if(!(body instanceof Block))
         {
