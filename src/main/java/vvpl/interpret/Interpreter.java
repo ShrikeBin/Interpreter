@@ -38,10 +38,14 @@ public class Interpreter implements Visitor<Object>
                     FuncDecl funcDecl = (FuncDecl) decl;
                     if(funcDecl.type == null)
                     {
-                        throw new SyntaxError("Function must have a return type, not " + funcDecl.type);
+                        Function function = new Function(funcDecl.name.lexeme, funcDecl.params, "void", funcDecl.body);
+                        env.put(funcDecl.name.lexeme, function);                    
                     }
-                    Function function = new Function(funcDecl.name.lexeme, funcDecl.params, funcDecl.type.lexeme, funcDecl.body);
-                    env.put(funcDecl.name.lexeme, function);
+                    else
+                    {
+                        Function function = new Function(funcDecl.name.lexeme, funcDecl.params, funcDecl.type.lexeme, funcDecl.body);
+                        env.put(funcDecl.name.lexeme, function);
+                    }
                 }
             }
         }
@@ -69,20 +73,24 @@ public class Interpreter implements Visitor<Object>
     }
 
     @Override
-    public Void visitFuncDecl(FuncDecl decl)
+    public Void visitFuncDecl(FuncDecl funcDecl)
     {
         if(!allowNestedFunctions)
         {
-            throw new SyntaxError("We only allow global function declarations " + decl.name.lexeme + " is defined in scope");
+            throw new SyntaxError("We only allow global function declarations " + funcDecl.name.lexeme + " is defined in scope");
         }
         else
         {
-            if(decl.type == null)
+            if(funcDecl.type == null)
             {
-                throw new SyntaxError("Function must have a return type, not: " + decl.type);
+                Function function = new Function(funcDecl.name.lexeme, funcDecl.params, "void", funcDecl.body);
+                env.put(funcDecl.name.lexeme, function);                    
             }
-            Function function = new Function(decl.name.lexeme, decl.params, decl.type.lexeme, decl.body);
-            env.put(decl.name.lexeme, function);
+            else
+            {
+                Function function = new Function(funcDecl.name.lexeme, funcDecl.params, funcDecl.type.lexeme, funcDecl.body);
+                env.put(funcDecl.name.lexeme, function);
+            }
             return null;
         }
     }
@@ -104,7 +112,7 @@ public class Interpreter implements Visitor<Object>
                 throw new TypeError("Type mismatch for variable '" +
                                     decl.name.lexeme + "': expected " +
                                     type + ", got " +
-                                    value.getClass().getSimpleName());
+                                    getName(value));
             }
         } 
         else 
@@ -132,11 +140,11 @@ public class Interpreter implements Visitor<Object>
         {
             throw new SyntaxError("Cannot assign value to function: " + name);
         }
-        if(!typeMatch(value, variable.getClass().getSimpleName().toLowerCase()))
+        if(!typeMatch(value, getName(value)))
         {
             throw new TypeError("Type mismatch in assignment to '" + name + 
-                "': expected " + variable.getClass().getSimpleName().toLowerCase() +
-                ", got " + value.getClass().getSimpleName().toLowerCase());
+                "': expected " + getName(variable) +
+                ", got " + getName(value));
         }
         env.set(name, value);
 
@@ -155,8 +163,8 @@ public class Interpreter implements Visitor<Object>
         if (!left.getClass().equals(right.getClass())) 
         {
             throw new SyntaxError("Type mismatch in logical expression: l: " 
-                + left.getClass().getSimpleName() +
-                ", r: " + right.getClass().getSimpleName());
+                + getName(left) +
+                ", r: " + getName(right));
         }
 
         if(left instanceof Boolean)
@@ -198,7 +206,7 @@ public class Interpreter implements Visitor<Object>
         else
         {
             throw new SyntaxError("Unsupported type for logical expression: " 
-                + left.getClass().getSimpleName());
+                + getName(left));
         }
     }
 
@@ -316,7 +324,7 @@ public class Interpreter implements Visitor<Object>
         {
             throw new RuntimeError("Cast evaluated to null");
         }
-        String castedType = casted.getClass().getSimpleName().toLowerCase();
+        String castedType = getName(casted);
 
         if(castedType.equals("integer")||castedType.equals("double"))
         {
@@ -501,6 +509,15 @@ public class Interpreter implements Visitor<Object>
             default:
                 return "unknown";
         }
+    }
+
+    private String getName(Object value)
+    {
+        if (value == null)
+        {
+            return "null";
+        }
+        return value.getClass().getSimpleName().toLowerCase();
     }
 
     private boolean typeMatch(Object value, String expectedType) 

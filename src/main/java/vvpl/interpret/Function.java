@@ -23,15 +23,7 @@ public class Function
         this.name = name; 
         this.params = params;
         this.body = body;
-        //TODO CHECK THIS
-        if(type == null)
-        {
-            this.type = "void";
-        }
-        else
-        {
-            this.type = type;
-        }
+        this.type = type;
 
         if(!(body instanceof Block))
         {
@@ -64,7 +56,7 @@ public class Function
             Object argValue = args.get(i);
             if(!typeMatch(argValue, paramType))
             {
-                throw new TypeError("Incorrect function parameter type for: " + paramName);
+                throw new TypeError("Incorrect function parameter in call for '" + name + "' for argument: " + paramName);
             }
             functionEnv.put(paramName, argValue);
         }
@@ -92,7 +84,6 @@ public class Function
         }
         finally
         {
-            //TODO do we really force return null if function is void? / or it works? xd
             interpreter.env = prevEnv;
             interpreter.inFunction = prev;
         }
