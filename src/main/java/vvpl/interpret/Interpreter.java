@@ -18,7 +18,6 @@ import vvpl.errors.*;
 import vvpl.scan.Token;
 import vvpl.scan.TokenType;
 
-
 public class Interpreter implements Visitor<Object>
 {
     boolean allowNestedFunctions = false;
@@ -92,7 +91,7 @@ public class Interpreter implements Visitor<Object>
     public Void visitVarDecl(VarDecl decl)
     {
         Object value = null;
-        if(!allowVariableRedeclaration)
+        if(!allowVariableRedeclaration && (env.get(decl.name.lexeme) != null))
         {
             throw new ScopeError("Variable '" + decl.name.lexeme + "' is already defined in the current scope.");
         }

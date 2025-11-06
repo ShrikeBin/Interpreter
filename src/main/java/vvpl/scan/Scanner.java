@@ -84,7 +84,14 @@ public class Scanner
 		while (!isAtEnd()) 
 		{
 			start = current;
-			scanToken();
+			try
+			{
+				scanToken();
+			}
+			catch(ScanError error)
+			{
+				continue;
+			}
 		}
 
 		addToken(TokenType.EOF, "", null);

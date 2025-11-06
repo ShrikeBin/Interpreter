@@ -10,5 +10,5 @@ loop_while (i LESS_EQUAL n) {
 	a is b;
 	b is next;
 	i is add(i 1);
-	write_to_console a;
+	write_to_console cast_to String (a);
 } 

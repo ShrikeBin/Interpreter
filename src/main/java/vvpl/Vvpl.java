@@ -3,10 +3,12 @@ package vvpl;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.NumberFormat.Style;
 import java.util.List;
 
 import vvpl.ast.Declaration;
 import vvpl.ast.visitors.ASTPrinter;
+import vvpl.errors.*;
 import vvpl.interpret.Interpreter;
 import vvpl.scan.Scanner;
 import vvpl.parse.Parser;
@@ -31,28 +33,48 @@ public class Vvpl
 		List<Token> tokens = scanner.scanTokens();
 
 		// print the tokens
-		for (Token token : tokens) {
-			System.out.println(token);
+		// for (Token token : tokens) {
+		// 	System.out.println(token);
+		// }
+
+		if(ErrorHandler.errors.size() != 0)
+		{
+			System.err.println("Errors during Scanning");
+			return;
 		}
 
 		Parser parser = new Parser(tokens);
 		List<Declaration> program = parser.parse();
 
 		// print the tree
-		ASTPrinter printer = new ASTPrinter();
-		System.out.println(printer.print(program));
+		// ASTPrinter printer = new ASTPrinter();
+		// System.out.println(printer.print(program));
+		if(ErrorHandler.errors.size() != 0)
+		{
+			System.err.println("Errors during Parsing");
+			return;
+		}
 
-		//TODO do not interpret if there were errors during parsing/Scanning
 		Interpreter interpreter = new Interpreter();
 		try 
 		{
 			interpreter.interpret(program);
 		}
-		catch (RuntimeException error) 
+		catch (ScopeError error) 
 		{
-			System.err.println("Error occured: ");
-			System.err.println(error.getMessage());
-			System.err.println();
+			System.err.println("Scope Error: " + error.getMessage());
+		}
+		catch (TypeError error) 
+		{
+			System.err.println("Type Error: " + error.getMessage());
+		}
+		catch (SyntaxError error) 
+		{
+			System.err.println("Syntax Error: " + error.getMessage());
+		}
+		catch (Exception error) 
+		{
+			System.err.println("[Unknown Error]:" + error.getMessage());
 		}
 	}
 }
