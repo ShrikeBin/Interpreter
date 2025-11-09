@@ -10,27 +10,12 @@
 - Nel: 
     - Parser, 
     - Printer
+    - Canary 
 
 - Jan: 
     - Scanner 
     - AST Classes
     - Tests
+    - Eager Interpreter
 
-## Changes made in tests:
-
-### Scanner tests:
-
-- `IDENTIFIER` -> `ID`
-- `PLUS` -> `ADD`
-
-More intuitive and easier to change one test than whole code.
-
-### Parser tests:
-
-- `BinaryExpr` -> `LogicalExpr`
-
-For all comparison operators, because they all return boolean values.
-
-- `LiteralExpr ... cast_to <type>` -> `CastExpr ... <type> ... LiteralExpr`
-
-For easier eval of AST tree later.
+(Canary is a syntax and scope checker running before the interpreter. The name comes from the canary in the coal mine metaphor, as it is meant to catch errors early and "die" before the interpreter runs.)
