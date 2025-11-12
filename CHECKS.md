@@ -43,6 +43,19 @@
   • check that arithmetic operations are performed on Numbers only
 
 
+
+### Other:
+
+*Please note, I made two small changes to the assignment description and the test-files:*
+
+    *the print-statement “write_to_console” may print any type (it was stated before differently in the assignment3 description)
+    in the previous test-files was a bug in Fibonacci-proc.in (one of the functions  accessed a global variable which is forbidden and should result in a scope error)*
+
+*Please continue working with this latest state.*
+
+
+*The “template” assingment3_tests.zip contains the test-directory that you can use to replace your current test-directory in the Maven project. Watch out to merge it with the test classes that you have written already on your own.*
+
 ### Questions:
 
 - **functions cannot use counters defined outside? (global var's)**
