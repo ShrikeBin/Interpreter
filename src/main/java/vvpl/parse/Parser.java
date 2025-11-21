@@ -97,15 +97,15 @@ public class Parser
     }
 
     private Statement statement() throws ParseError {
-        if (match(TokenType.PRINT)) return printStmt();
         if (match(TokenType.LEFT_BRACE)) return block();
-        if (match(TokenType.IF)) return ifStmt();
-        if (match(TokenType.WHILE)) return whileStmt();
-        if (match(TokenType.RETURN)) return returnStmt();
+        if (check(TokenType.PRINT)) return printStmt(advance());
+        if (check(TokenType.IF)) return ifStmt(advance());
+        if (check(TokenType.WHILE)) return whileStmt(advance());
+        if (check(TokenType.RETURN)) return returnStmt(advance());
         return expressionStmt();
     }
 
-    private Statement ifStmt() throws ParseError {
+    private Statement ifStmt(Token keyword) throws ParseError {
         consume(TokenType.LEFT_PAREN, "Expected '(' after 'if'.");
         Expression condition = expression();
         consume(TokenType.RIGHT_PAREN, "Expected ')' after condition.");
@@ -115,21 +115,21 @@ public class Parser
         if (match(TokenType.ELSE)) {
             elseBranch = statement();
         }
-        return new If(condition, thenBranch, elseBranch);
+        return new If(keyword, condition, thenBranch, elseBranch);
     }
 
-    private Statement whileStmt() throws ParseError {
+    private Statement whileStmt(Token keyword) throws ParseError {
         consume(TokenType.LEFT_PAREN, "Expected '(' after 'while'.");
         Expression condition = expression();
         consume(TokenType.RIGHT_PAREN, "Expected ')' after condition.");
         Statement body = statement();
-        return new While(condition, body);
+        return new While(keyword, condition, body);
     }
 
-    private Statement printStmt() throws ParseError {
+    private Statement printStmt(Token keyword) throws ParseError {
         Expression value = expression();
         consume(TokenType.SEMICOLON, "Expected ';' after print statement.");
-        return new Print(value);
+        return new Print(keyword, value);
     }
 
     private Statement block() throws ParseError {
@@ -144,13 +144,13 @@ public class Parser
         return new Block(declarations);
     }
 
-    private Statement returnStmt() throws ParseError {
+    private Statement returnStmt(Token keyword) throws ParseError {
         Expression value = null;
         if (!check(TokenType.SEMICOLON)) {
             value = expression();
         }
         consume(TokenType.SEMICOLON, "Expected ';' after return.");
-        return new Return(value);
+        return new Return(keyword, value);
     }
 
     private Statement expressionStmt() throws ParseError {
@@ -199,7 +199,7 @@ public class Parser
         while (check(TokenType.NOT_EQUALS, TokenType.EQUALS)) {
             Token op = advance();
             Expression right = comparison();
-            expr = new Logical(expr, op, right);
+            expr = new Binary(op, expr, right);
         }
         return expr;
     }
@@ -209,7 +209,7 @@ public class Parser
         while (check(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
             Token op = advance();
             Expression right = term();
-            expr = new Logical(expr, op, right);
+            expr = new Binary(op, expr, right);
         }
         return expr;
     }

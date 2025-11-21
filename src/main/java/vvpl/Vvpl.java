@@ -13,6 +13,7 @@ import vvpl.interpret.Interpreter;
 import vvpl.scan.Scanner;
 import vvpl.parse.Parser;
 import vvpl.scan.Token;
+import vvpl.semantics.Canary;
 
 public class Vvpl 
 {
@@ -52,6 +53,15 @@ public class Vvpl
 		if(ErrorHandler.errors.size() != 0)
 		{
 			System.err.println("Errors during Parsing");
+			return;
+		}
+
+		Canary canary = new Canary(program);
+		canary.check();
+
+		if(ErrorHandler.errors.size() != 0)
+		{
+			System.err.println("Errors during Semantic Check");
 			return;
 		}
 

@@ -9,271 +9,357 @@ import vvpl.ast.variable.*;
 import vvpl.ast.visitors.Visitor;
 import vvpl.errors.*;
 import vvpl.scan.*;
+import vvpl.semantics.symbol.*;
 
-public class Canary implements Visitor<String> 
-{
-    private final TypeTable env = new TypeTable(null);
-    private boolean inFunction = false;
-    private boolean allowNestedFunctions = false;
-    private boolean allowVariableRedeclaration = false;
+/*
+Scope-checks and then (if successful) type-checks each statement and expression
+ */
+public class Canary implements Visitor<SymbolType> {
+    private SymbolTable scope = new SymbolTable(ScopeKind.GLOBAL, null);
+    private List<Declaration> program;
 
-    public void check(List<Declaration> program) throws SyntaxError, ScopeError, TypeError 
-    {
-        for (Declaration decl : program) 
-        {
-            if (decl instanceof FuncDecl f)
-            {
-                if (env.get(f.name.lexeme) != null)
-                {
-                    throw new ScopeError("Duplicate function: " + f.name.lexeme);
+    public Canary(List<Declaration> program) {
+        this.program = program;
+    }
+
+    public void check() {
+
+        // First go - out of order global function declarations
+        for (Declaration decl : program) {
+            if (decl instanceof FuncDecl f){
+                if (scope.get(f.name.lexeme) != null) {
+                    scopeError(f.name, "Function already defined.");
+                    continue; // keep on checking using the first definition
                 }
-                String retType = (f.type == null) ? "void" : f.type.lexeme.toLowerCase();
-                env.put(f.name.lexeme, retType);
+                List<SymbolType> paramTypes = f.params.stream()
+                    .map(param -> SymbolType.map.get(param.type.type))
+                    .toList();
+                SymbolType returnType = f.type != null ? SymbolType.map.get(f.type.type) : SymbolType.VOID;
+                scope.add(f.name.lexeme, new Symbol(SymbolKind.FUNCTION, returnType, paramTypes));
             }
         }
 
-        for (Declaration decl : program) 
-        {
-            if (!(decl instanceof FuncDecl)) 
-            {
-                decl.accept(this);
-            }
+        // Second go - scope checks and type checks
+        for (Declaration decl : program) {
+            decl.accept(this);
         }
     }
 
     @Override
-    public String visitFuncDecl(FuncDecl func) 
-    {
-        if (!allowNestedFunctions)
-        {
-            throw new SyntaxError("Nested functions not allowed: " + func.name.lexeme);
+    public SymbolType visitFuncDecl(FuncDecl func) {
+        if (scope.kind() != ScopeKind.GLOBAL) {
+            scopeError(func.name, "Cannot define a function in a non-global scope.");
+            return null; // don't check a function in weird place
         }
 
-        String retType = (func.type == null) ? "void" : func.type.lexeme.toLowerCase();
-        TypeTable local = new TypeTable(env);
+        scope = scope.newScope(ScopeKind.FUNCTION);
 
-        for (Param p : func.params)
-        {
-            local.put(p.name.lexeme, p.type.lexeme.toLowerCase());
+        scope.add("$", new Symbol(SymbolKind.RETURN_PLACEHOLDER, SymbolType.map.get(func.type.type)));
+        for (Param param : func.params) {
+            if (scope.get(param.name.lexeme) != null) { // allows for shadowing globals because of get() definition
+                scopeError(param.name, "Two parameters with the same name.");
+            }
+            scope.add(param.name.lexeme, new Symbol(SymbolKind.VARIABLE, SymbolType.map.get(param.type.type)));
         }
 
-        if(!(func.body instanceof Block))
-        {
-            throw new SyntaxError("Function body must be a block: " + func.name.lexeme);
-        }
+        func.body.accept(this);
 
-        //TODO here we should check for return statements matching the function type, and if the last statement return;
+        scope = scope.endScope();
         return null;
     }
 
     @Override
-    public String visitVarDecl(VarDecl decl) 
-    {
-        String type = getTypeString(decl.type.type);
-        if (!allowVariableRedeclaration && env.get(decl.name.lexeme) != null)
-        {
-            throw new ScopeError("Redeclaration of variable: " + decl.name.lexeme);
+    public SymbolType visitVarDecl(VarDecl decl) {
+        Boolean defined = scope.get(decl.name.lexeme) != null;
+        System.out.println("Variable " + decl.name.lexeme + " " + defined.toString());
+
+        if (defined) { // doesn't allow shadowing
+            scopeError(decl.name, "Redeclaration of variable.");
+        } // keep checking
+        System.out.println("dupaa1");
+        if (decl.initializer == null) {
+            typeError(decl.name, "No initializer.");
+            return null; // nothing to check
         }
-        if (decl.initializer != null) 
-        {
-            String rhsType = decl.initializer.accept(this);
-            if (!typeCompatible(rhsType, type))
-            {
-                throw new TypeError("Type mismatch in variable '" + decl.name.lexeme +
-                    "': expected " + type + ", got " + rhsType);
-            }
+        System.out.println("dupaa2");
+        SymbolType initializerType = decl.initializer.accept(this);
+        System.out.print(initializerType);
+        if (initializerType == null) {
+            return null; // something went wrong in initializer check
         }
-        env.put(decl.name.lexeme, type);
+        System.out.println("dupaa3");
+        if (initializerType != SymbolType.map.get(decl.type.type)) {
+            typeError(decl.name, "Cannot assign " + initializerType.toString() + " to " + SymbolType.map.get(decl.type.type).toString() + ".");
+            return null; // incompatible types
+        }
+        System.out.println("dupaa4");
+        if (!defined) { // don't redefine
+            System.out.println("dupaa");
+            scope.add(decl.name.lexeme, new Symbol(SymbolKind.VARIABLE, initializerType));
+        }
         return null;
     }
 
     @Override
-    public String visitBinaryExpr(Binary expr) 
-    {
-        String left = expr.left.accept(this);
-        String right = expr.right.accept(this);
-        if (!left.equals("number") || !right.equals("number"))
-        {
-            throw new TypeError("Binary operation requires numeric operands.");
-        }
-        return "number";
-    }
+    public SymbolType visitBinaryExpr(Binary expr) {
+        SymbolType left = expr.left.accept(this);
+        SymbolType right = expr.right.accept(this);
 
-    @Override
-    public String visitLiteralExpr(Literal expr) 
-    {
-        switch (expr.value.type) 
-        {
-            case NUMBER:
-                return "number";
-            case STRING:
-                return "string";
-            case TRUE:
-            case FALSE:
-                return "boolean";
+        if (left == null || right == null) {
+            return null; // something went wrong in operands check
+        }
+
+        if (left != SymbolType.NUMBER || right != SymbolType.NUMBER) {
+            typeError(expr.operator, "Operands must be both numbers. Got: " + left.toString() + " and " + right.toString() + ".");
+            return null;
+        }
+
+        switch (expr.operator.type) {
+            case TokenType.ADD:
+            case TokenType.SUB:
+            case TokenType.MULT:
+            case TokenType.DIV:
+                return SymbolType.NUMBER;
+            case TokenType.LESS:
+            case TokenType.GREATER:
+            case TokenType.LESS_EQUAL:
+            case TokenType.GREATER_EQUAL:
+            case TokenType.EQUALS:
+            case TokenType.NOT_EQUALS:
+                return SymbolType.BOOL;
             default:
-                return "unknown";
+                return null;
         }
     }
 
     @Override
-    public String visitVariableExpr(Variable expr) 
-    {
-        String type = env.get(expr.name.lexeme);
-        if (type == null) 
-        {
-            throw new ScopeError("Undeclared variable: " + expr.name.lexeme);
-        }
-        return type;
+    public SymbolType visitLiteralExpr(Literal expr) {
+        return SymbolType.map.get(expr.value.type);
     }
 
     @Override
-    public String visitAssignExpr(Assignment expr) 
-    {
-        String name = expr.ID.lexeme;
-        String varType = env.get(name);
+    public SymbolType visitVariableExpr(Variable expr) {
+        Symbol var = scope.get(expr.name.lexeme);
 
-        if (varType == null)
-        {
-            throw new ScopeError("Undeclared variable: " + name);
+        if (var == null) {
+            scopeError(expr.name, "Variable not defined.");
+            return null;
         }
 
-        String valueType = expr.value.accept(this);
-
-        if (!typeCompatible(valueType, varType))
-        {
-            throw new TypeError("Type mismatch in assignment to '" + name +
-                "': expected " + varType + ", got " + valueType);
+        if (var.kind != SymbolKind.VARIABLE) {
+            typeError(expr.name, expr.name.lexeme + " is not a variable.");
+            return null;
         }
-        return varType;
+
+        return var.type;
     }
 
     @Override
-    public String visitLogicalExpr(Logical expr) 
-    {
-        String left = expr.left.accept(this);
-        String right = expr.right.accept(this);
-        if (!left.equals(right))
-        {
-            throw new TypeError("Logical operands must be same type.");
+    public SymbolType visitAssignExpr(Assignment expr) {
+        Symbol var = scope.get(expr.ID.lexeme);
+
+        if (var == null) {
+            scopeError(expr.ID, "Variable not defined.");
+        } // keep checking
+
+        if (var != null && var.kind != SymbolKind.VARIABLE) {
+            typeError(expr.ID, expr.ID.lexeme + " is not a variable.");
+            var = null; // as good as undefined
+        }// keep checking
+
+        SymbolType valueType = expr.value.accept(this);
+        if (valueType == null) {
+            return null; // something went wrong in value check
         }
-        return "boolean";
+
+        if (var == null) {
+            return null; // nothing to compare value type to
+        }
+
+        if (valueType != var.type) {
+            typeError(expr.ID, "Cannot assign " + valueType.toString() + " to " + var.type.toString() + ".");
+            return null; // incompatible types
+        }
+        return var.type;
     }
 
     @Override
-    public String visitIfStmt(If stmt) 
-    {
-        String condType = stmt.condition.accept(this);
-
-        if (!condType.equals("boolean"))
-        {
-            throw new TypeError("If condition must be boolean.");
+    public SymbolType visitLogicalExpr(Logical expr) {
+        SymbolType left = expr.left.accept(this);
+        SymbolType right = expr.right.accept(this);
+        System.out.println("dupa11");
+        if (left == null || right == null) {
+            return null; // something went wrong in operands check
         }
+        System.out.println("dupa12");
+        if (left != SymbolType.BOOL || right != SymbolType.BOOL) {
+            typeError(expr.operator, "Operands must be both booleans. Got: " + left.toString() + " and " + right.toString() + ".");
+            return null;
+        }
+        System.out.println("dupa13");
+        return SymbolType.BOOL;
+    }
 
+    @Override
+    public SymbolType visitIfStmt(If stmt) {
+        SymbolType condType = stmt.condition.accept(this);
+        if (condType != null && condType != SymbolType.BOOL) {
+            typeError(stmt.keyword, "Condition should be a boolean. Got: " + condType.toString() + ".");
+        }
         stmt.thenBranch.accept(this);
-
-        if (stmt.elseBranch != null)
-        {
+        if (stmt.elseBranch != null) {
             stmt.elseBranch.accept(this);
         }
+
         return null;
     }
 
     @Override
-    public String visitWhileStmt(While stmt) 
-    {
-        String condType = stmt.condition.accept(this);
-
-        if (!condType.equals("boolean"))
-        {
-            throw new TypeError("While condition must be boolean.");
+    public SymbolType visitWhileStmt(While stmt) {
+        SymbolType condType = stmt.condition.accept(this);
+        if (condType != null && condType != SymbolType.BOOL) {
+            typeError(stmt.keyword, "Condition should be a boolean. Got: " + condType.toString() + ".");
         }
-
         stmt.body.accept(this);
 
         return null;
     }
 
     @Override
-    public String visitBlockStmt(Block stmt) 
-    {
-        //TODO Create a new scope and fix stuff here
+    public SymbolType visitBlockStmt(Block stmt) {
+        scope = scope.newScope(ScopeKind.BLOCK);
+
+        for (Declaration decl : stmt.statements) {
+            decl.accept(this);
+
+            if (decl instanceof Return ret && decl != stmt.statements.getLast()) {
+                typeError(ret.keyword, "Unreachable code after return statement.");
+            }
+        }
+
+        scope = scope.endScope();
         return null;
     }
 
     @Override
-    public String visitReturnStmt(Return stmt) 
-    {
-        if (!inFunction)
-        {
-            throw new SyntaxError("Return outside of function");
+    public SymbolType visitReturnStmt(Return stmt) {
+        SymbolType valueType = stmt.value != null ? stmt.value.accept(this) : SymbolType.VOID;
+
+        if (scope.kind() != ScopeKind.FUNCTION) {
+            typeError(stmt.keyword, "Return statement is not in a function.");
+            return null;
         }
-        if (stmt.value != null) 
-        {
-            stmt.value.accept(this);
+
+        SymbolType returnType = scope.get("$").type; // return placeholder symbol
+        if (valueType != returnType) {
+            typeError(stmt.keyword, "Wrong return type. Expected: " + returnType.toString() + ", got: " + valueType.toString() + ".");
         }
         return null;
     }
 
-    // TODO Check those if need to be like this
     @Override 
-    public String visitCallExpr(Call expr) 
-    { 
-        //TODO i think we can check for function existence and argument types here
-        return "unknown"; 
+    public SymbolType visitCallExpr(Call expr) { 
+        Symbol function = scope.get(expr.ID.lexeme);
+
+        if (function == null) {
+            scopeError(expr.ID, "Function not defined");
+        } // keep checking
+
+        if (function != null && function.kind != SymbolKind.FUNCTION) {
+            typeError(expr.ID, expr.ID.lexeme + " is not a function.");
+        } // keep checking
+
+        List<SymbolType> argTypes = expr.args.stream()
+            .map(arg -> arg.accept(this)) // check args
+            .toList();
+
+        if (function == null) {
+            return null; // nothing to compare arg types to
+        }
+
+        if (!function.paramTypes.equals(argTypes)) {
+            typeError(expr.ID, "Wrong arguments. Expected: " + function.paramTypes.toString() + ", got: " + argTypes.toString() + ".");
+            return null; // arg types mismatch
+        }
+
+        return function.type;
     }
+
     @Override 
-    public String visitUnaryExpr(Unary expr) 
-    { 
-        //TODO check operand type here
-        return "unknown";
+    public SymbolType visitUnaryExpr(Unary expr) { 
+        SymbolType right = expr.right.accept(this);
+
+        if (right == null) {
+            return null; // something went wrong in operand check
+        }
+
+        switch (expr.operator.type) {
+            case TokenType.NOT:
+                if (right != SymbolType.BOOL) {
+                    typeError(expr.operator, "Operand must be a boolean. Got: " + right.toString() + ".");
+                    return null;
+                }
+                return SymbolType.BOOL;
+            case TokenType.MINUS:
+                if (right != SymbolType.NUMBER) {
+                    typeError(expr.operator, "Operand must be a number. Got: " + right.toString() + ".");
+                    return null;
+                }
+                return SymbolType.NUMBER;
+            default:
+                return null;
+        }
     }
+
     @Override 
-    public String visitCastExpr(Cast expr) 
-    { 
-        return expr.type.lexeme.toLowerCase(); 
+    public SymbolType visitCastExpr(Cast expr) { 
+        SymbolType castedType = SymbolType.map.get(expr.type.type);
+        SymbolType valueType = expr.value.accept(this);
+
+        if (valueType == null) {
+            return null; // something went wrong in value check
+        }
+
+        if (castedType == valueType) {
+            return castedType; // can always cast between same types
+        }
+
+        if (castedType == SymbolType.STRING) {
+            return castedType; // can always cast to string
+        }
+
+        if ( // TODO: eval string? (its always hardcoded)
+            (valueType == SymbolType.STRING && castedType == SymbolType.NUMBER) ||
+            (valueType == SymbolType.NUMBER && castedType == SymbolType.BOOL)
+        ) {
+            return castedType; // pottentially castable, might fail at runtime
+        }
+
+        return null;
     }
+
     @Override 
-    public String visitExprStmt(Expr stmt) 
-    { 
+    public SymbolType visitExprStmt(Expr stmt) { 
         stmt.expr.accept(this); 
         return null; 
     }
+
     @Override 
-    public String visitPrintStmt(Print stmt) 
-    { 
-        //TODO check expression type here, if its string or not?
-        stmt.expression.accept(this); 
-        return null; 
-    }
-    @Override 
-    public String visitParamDecl(Param decl) 
-    { 
-        //TODO dunno about this
+    public SymbolType visitPrintStmt(Print stmt) {
+        stmt.expression.accept(this); // can print anything
         return null; 
     }
 
-    private boolean typeCompatible(String got, String expected) 
-    {
-        if (expected.equals("number"))
-        {
-            return got.equals("number") || got.equals("integer") || got.equals("double");
-        }
-        return got.equals(expected);
+    @Override 
+    public SymbolType visitParamDecl(Param decl) {
+        throw new UnsupportedOperationException("Type checking a parameter??");
     }
 
-    private String getTypeString(TokenType type) 
-    {
-        switch (type) 
-        {
-            case NUMBER_TYPE:
-                return "number";
-            case STRING_TYPE:
-                return "string";
-            case BOOL_TYPE:
-                return "boolean";
-            default:
-                return "unknown";
-        }
+    private void scopeError(Token name, String message) {
+        ErrorHandler.error(name.line, "Scope Error at '" + name.lexeme + "': " + message);
+    }
+
+    private void typeError(Token name, String message) {
+        ErrorHandler.error(name.line, "Type Error at '" + name.lexeme + "': " + message);
     }
 }
