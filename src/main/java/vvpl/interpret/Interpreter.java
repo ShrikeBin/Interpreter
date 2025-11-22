@@ -175,32 +175,8 @@ public class Interpreter implements Visitor<Object>
                     return (Boolean)left && (Boolean)right;
                 case OR:
                     return (Boolean)left || (Boolean)right;
-                case EQUALS:
-                    return left.equals(right);
-                case NOT_EQUALS:
-                    return !left.equals(right);
                 default:
                     throw new SyntaxError("Unknown/Invalid logical operator for Booleans: " + expr.operator.lexeme);
-            }
-        }
-        else if (left instanceof Double)
-        {
-            switch (expr.operator.type) 
-            {
-                case EQUALS:
-                    return left.equals(right);
-                case NOT_EQUALS:
-                    return !left.equals(right);
-                case GREATER:
-                    return (Double)left > (Double)right;
-                case GREATER_EQUAL:
-                    return (Double)left >= (Double)right;
-                case LESS:
-                    return (Double)left < (Double)right;
-                case LESS_EQUAL:
-                    return (Double)left <= (Double)right;
-                default:
-                    throw new SyntaxError("Unknown/Invalid logical operator for Numbers: " + expr.operator.lexeme);
             }
         }
         else
@@ -271,27 +247,65 @@ public class Interpreter implements Visitor<Object>
         Object left = evaluate(expr.left);
         Object right = evaluate(expr.right);
 
-        if(!(left instanceof Double) || !(right instanceof Double)) 
+        if (left == null || right == null)
         {
-            throw new SyntaxError("Binary operations require numeric operands.");
+            throw new RuntimeError("Something evaluated to null in Binary expression");
         }
-
-        switch (expr.operator.type) 
+        if (!left.getClass().equals(right.getClass())) 
         {
-            case ADD:
-                return (Double)left + (Double)right;
-            case SUB:
-                return (Double)left - (Double)right;
-            case MULT:  
-                return (Double)left * (Double)right;
-            case DIV:
-                if ((Double)right == 0) 
-                {
-                    throw new SyntaxError("Division by zero idiot.");
-                }
-                return (Double)left / (Double)right;
-            default:
-                throw new SyntaxError("Unknown binary operator: " + expr.operator.lexeme);
+            throw new SyntaxError("Type mismatch in binary expression: l: " 
+                + getName(left) +
+                ", r: " + getName(right));
+        }
+        
+        if(left instanceof Boolean)
+        {
+            switch (expr.operator.type) 
+            {
+                case EQUALS:
+                    return left.equals(right);
+                case NOT_EQUALS:
+                    return !left.equals(right);
+                default:
+                    throw new SyntaxError("Unknown/Invalid logical operator for Booleans: " + expr.operator.lexeme);
+            }
+        }
+        else if (left instanceof Double)
+        {
+            switch (expr.operator.type) 
+            {
+                case EQUALS:
+                    return left.equals(right);
+                case NOT_EQUALS:
+                    return !left.equals(right);
+                case GREATER:
+                    return (Double)left > (Double)right;
+                case GREATER_EQUAL:
+                    return (Double)left >= (Double)right;
+                case LESS:
+                    return (Double)left < (Double)right;
+                case LESS_EQUAL:
+                    return (Double)left <= (Double)right;
+                case ADD:
+                    return (Double)left + (Double)right;
+                case SUB:
+                    return (Double)left - (Double)right;
+                case MULT:  
+                    return (Double)left * (Double)right;
+                case DIV:
+                    if ((Double)right == 0) 
+                    {
+                        throw new SyntaxError("Division by zero idiot.");
+                    }
+                    return (Double)left / (Double)right;
+                default:
+                    throw new SyntaxError("Unknown binary operator for numbers: " + expr.operator.lexeme);
+            }
+        }
+        else
+        {
+            throw new SyntaxError("Unsupported type for binary expression: " 
+                + getName(left));
         }
     }
 

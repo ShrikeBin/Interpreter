@@ -21,8 +21,8 @@ function fibIterative(n has_type Number) has_type Number {
 variable counter has_type Number is 1;
 
 function fibRecursive(n has_type Number) has_type Number {
-    write_to_console cast_to String (counter);
-    counter is add (counter 1);
+    #write_to_console cast_to String (counter);
+    #counter is add (counter 1);
     if (n LESS 0 ) {
        return -1;
     }
