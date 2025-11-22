@@ -1,7 +1,12 @@
 function f() {
-    function g() {}
+    variable h has_type Bool is true;
+    variable z has_type String is "Hello World";
 
-    if (True) {
+    function g() {
+        write_to_console(z);
+    }
+
+    if (true) {
         return;
     } else {
         return 1;
@@ -24,9 +29,9 @@ f(x);
         }
     }
 
-    if (x GREATER_EQUAL 1) {
+    if (x) {
         variable y has_type Bool is (cast_to Bool x AND h(f));
-        False OR y;
+        false OR y;
     } else {
         y is "Hello";
     }
@@ -35,5 +40,5 @@ f(x);
 }
 
 function h(y has_type String) has_type Bool {
-    return True;
+    return true;
 }

@@ -47,7 +47,7 @@ public class Canary implements Visitor<SymbolType> {
 
     @Override
     public SymbolType visitFuncDecl(FuncDecl func) {
-        if (scope.kind() != ScopeKind.GLOBAL) {
+        if (scope.level() != ScopeKind.GLOBAL) {
             scopeError(func.name, "Cannot define a function in a non-global scope.");
             // return null; // don't check a function in weird place
         } // keep checking
@@ -255,11 +255,14 @@ public class Canary implements Visitor<SymbolType> {
 
     @Override
     public SymbolType visitReturnStmt(Return stmt) {
-        SymbolType valueType = stmt.value != null ? stmt.value.accept(this) : SymbolType.VOID;
-
         if (scope.kind() != ScopeKind.FUNCTION) {
             typeError(stmt.keyword, "Return statement is not in a function.");
             return null;
+        }
+
+        SymbolType valueType = stmt.value != null ? stmt.value.accept(this) : SymbolType.VOID;
+        if (valueType == null) {
+            return null; // nothing to compare return type to
         }
 
         SymbolType returnType = scope.get("$").type; // return placeholder symbol
@@ -285,8 +288,8 @@ public class Canary implements Visitor<SymbolType> {
             .map(arg -> arg.accept(this)) // check args
             .toList();
 
-        if (function == null) {
-            return null; // nothing to compare arg types to
+        if (function == null || argTypes.contains(null)) {
+            return null; // nothing to compare
         }
 
         if (!function.paramTypes.equals(argTypes)) {

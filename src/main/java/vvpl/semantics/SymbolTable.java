@@ -44,4 +44,8 @@ public class SymbolTable
     public ScopeKind kind() {
         return kind != ScopeKind.BLOCK ? kind : parent.kind();
     }
+
+    public ScopeKind level() {
+        return kind;
+    }
 }
