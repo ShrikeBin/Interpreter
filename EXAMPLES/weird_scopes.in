@@ -1,0 +1,39 @@
+function f() {
+    function g() {}
+
+    if (True) {
+        return;
+    } else {
+        return 1;
+        write_to_console("Unreachable code?");
+    }
+}
+
+g(x);
+
+variable x has_type Number is 0.0;
+
+g(x);
+
+f(x);
+
+{
+    {
+        function h(x has_type String) {
+            write_to_console(x);
+        }
+    }
+
+    if (x GREATER_EQUAL 1) {
+        variable y has_type Bool is (cast_to Bool x AND h(f));
+        False OR y;
+    } else {
+        y is "Hello";
+    }
+
+    write_to_console(y);
+}
+
+function h(y has_type String) has_type Bool {
+    return True;
+}

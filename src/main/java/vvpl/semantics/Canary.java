@@ -49,12 +49,13 @@ public class Canary implements Visitor<SymbolType> {
     public SymbolType visitFuncDecl(FuncDecl func) {
         if (scope.kind() != ScopeKind.GLOBAL) {
             scopeError(func.name, "Cannot define a function in a non-global scope.");
-            return null; // don't check a function in weird place
-        }
+            // return null; // don't check a function in weird place
+        } // keep checking
 
         scope = scope.newScope(ScopeKind.FUNCTION);
 
-        scope.add("$", new Symbol(SymbolKind.RETURN_PLACEHOLDER, SymbolType.map.get(func.type.type)));
+        SymbolType returnType = func.type != null ? SymbolType.map.get(func.type.type) : SymbolType.VOID;
+        scope.add("$", new Symbol(SymbolKind.RETURN_PLACEHOLDER, returnType));
         for (Param param : func.params) {
             if (scope.get(param.name.lexeme) != null) { // allows for shadowing globals because of get() definition
                 scopeError(param.name, "Two parameters with the same name.");
@@ -71,30 +72,28 @@ public class Canary implements Visitor<SymbolType> {
     @Override
     public SymbolType visitVarDecl(VarDecl decl) {
         Boolean defined = scope.get(decl.name.lexeme) != null;
-        System.out.println("Variable " + decl.name.lexeme + " " + defined.toString());
 
         if (defined) { // doesn't allow shadowing
             scopeError(decl.name, "Redeclaration of variable.");
         } // keep checking
-        System.out.println("dupaa1");
+        
         if (decl.initializer == null) {
             typeError(decl.name, "No initializer.");
             return null; // nothing to check
         }
-        System.out.println("dupaa2");
+        
         SymbolType initializerType = decl.initializer.accept(this);
-        System.out.print(initializerType);
+        
         if (initializerType == null) {
             return null; // something went wrong in initializer check
         }
-        System.out.println("dupaa3");
+        
         if (initializerType != SymbolType.map.get(decl.type.type)) {
             typeError(decl.name, "Cannot assign " + initializerType.toString() + " to " + SymbolType.map.get(decl.type.type).toString() + ".");
             return null; // incompatible types
         }
-        System.out.println("dupaa4");
+        
         if (!defined) { // don't redefine
-            System.out.println("dupaa");
             scope.add(decl.name.lexeme, new Symbol(SymbolKind.VARIABLE, initializerType));
         }
         return null;
@@ -109,23 +108,36 @@ public class Canary implements Visitor<SymbolType> {
             return null; // something went wrong in operands check
         }
 
-        if (left != SymbolType.NUMBER || right != SymbolType.NUMBER) {
-            typeError(expr.operator, "Operands must be both numbers. Got: " + left.toString() + " and " + right.toString() + ".");
-            return null;
-        }
-
         switch (expr.operator.type) {
             case TokenType.ADD:
             case TokenType.SUB:
             case TokenType.MULT:
             case TokenType.DIV:
+                if (left != SymbolType.NUMBER || right != SymbolType.NUMBER) {
+                    typeError(expr.operator, "Operands must be both numbers. Got: " + left.toString() + " and " + right.toString() + ".");
+                    return null;
+                }
                 return SymbolType.NUMBER;
+
             case TokenType.LESS:
             case TokenType.GREATER:
             case TokenType.LESS_EQUAL:
             case TokenType.GREATER_EQUAL:
+                if (left != SymbolType.NUMBER || right != SymbolType.NUMBER) {
+                    typeError(expr.operator, "Operands must be both numbers. Got: " + left.toString() + " and " + right.toString() + ".");
+                    return null;
+                }
+                return SymbolType.BOOL;
+
             case TokenType.EQUALS:
             case TokenType.NOT_EQUALS:
+                if (
+                    !(left == SymbolType.NUMBER && right == SymbolType.NUMBER) &&
+                    !(left == SymbolType.BOOL && right == SymbolType.BOOL)
+                ) {
+                    typeError(expr.operator, "Operands must be both numbers or booleans. Got: " + left.toString() + " and " + right.toString() + ".");
+                    return null;
+                }
                 return SymbolType.BOOL;
             default:
                 return null;
@@ -165,7 +177,7 @@ public class Canary implements Visitor<SymbolType> {
         if (var != null && var.kind != SymbolKind.VARIABLE) {
             typeError(expr.ID, expr.ID.lexeme + " is not a variable.");
             var = null; // as good as undefined
-        }// keep checking
+        } // keep checking
 
         SymbolType valueType = expr.value.accept(this);
         if (valueType == null) {
@@ -187,16 +199,16 @@ public class Canary implements Visitor<SymbolType> {
     public SymbolType visitLogicalExpr(Logical expr) {
         SymbolType left = expr.left.accept(this);
         SymbolType right = expr.right.accept(this);
-        System.out.println("dupa11");
+        
         if (left == null || right == null) {
             return null; // something went wrong in operands check
         }
-        System.out.println("dupa12");
+        
         if (left != SymbolType.BOOL || right != SymbolType.BOOL) {
             typeError(expr.operator, "Operands must be both booleans. Got: " + left.toString() + " and " + right.toString() + ".");
             return null;
         }
-        System.out.println("dupa13");
+        
         return SymbolType.BOOL;
     }
 

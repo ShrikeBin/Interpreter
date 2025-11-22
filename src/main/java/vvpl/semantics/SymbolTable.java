@@ -26,7 +26,7 @@ public class SymbolTable
         if (symbol == null && parent != null) {
             symbol = parent.get(name);
 
-            if (kind == ScopeKind.FUNCTION && symbol.kind == SymbolKind.VARIABLE) {
+            if (symbol == null || kind == ScopeKind.FUNCTION && symbol.kind == SymbolKind.VARIABLE) {
                 return null; // functions cannot access global variables
             }
         }
@@ -42,6 +42,6 @@ public class SymbolTable
     }
 
     public ScopeKind kind() {
-        return kind != ScopeKind.BLOCK ? kind : parent.kind;
+        return kind != ScopeKind.BLOCK ? kind : parent.kind();
     }
 }
