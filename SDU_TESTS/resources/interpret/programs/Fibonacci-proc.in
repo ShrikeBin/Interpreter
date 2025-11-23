@@ -2,6 +2,7 @@
 # Print the first n Fibonacci numbers
 #######################################
 
+
 function fibIterative(n has_type Number) has_type Number {
     write_to_console "start iteration";
     variable a has_type Number is 0;
@@ -14,15 +15,11 @@ function fibIterative(n has_type Number) has_type Number {
         i is add(i  1);
     }
     write_to_console "ended iteration";
-    #write_to_console cast_to String (b);
+    write_to_console b;
     return b;
 }
 
-variable counter has_type Number is 1;
-
 function fibRecursive(n has_type Number) has_type Number {
-    #write_to_console cast_to String (counter);
-    #counter is add (counter 1);
     if (n LESS 0 ) {
        return -1;
     }
@@ -37,6 +34,6 @@ function fibRecursive(n has_type Number) has_type Number {
 
 # Input
 variable n has_type Number is 10;
-write_to_console cast_to String (fibIterative(n));
-write_to_console cast_to String (fibRecursive(n));
+write_to_console fibIterative(n); # would output twice 55
+write_to_console fibRecursive(n);
 

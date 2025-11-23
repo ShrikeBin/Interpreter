@@ -8,6 +8,7 @@ import vvpl.ast.statement.*;
 import vvpl.ast.function.*;
 import vvpl.ast.variable.VarDecl;
 import vvpl.scan.Token;
+import vvpl.scan.TokenType;
 
 /**
  * @author Nel Skowronek
@@ -107,7 +108,11 @@ public class ASTPrinter implements Visitor<Void>
     @Override
     public Void visitReturnStmt(Return stmt) {
         builder.append("ReturnStmt\n");
-        printDeclaration(stmt.value, true);
+        if (stmt.value == null) {
+            printToken(new Token(TokenType.RETURN, "VOID", null, stmt.keyword.line), true);
+        } else {
+            printDeclaration(stmt.value, true);
+        }
         return null;
     }
 

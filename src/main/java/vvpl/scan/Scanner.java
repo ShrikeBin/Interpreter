@@ -204,22 +204,12 @@ public class Scanner
 
 	private void string() 
 	{
-		Boolean nextLine = false;
 		while (peek() != '"' && !isAtEnd()) 
 		{
-
 			if (peek() == '\n') 
 			{
 				line++;
-
-				if(nextLine)
-				{
-					throw error(line, "Strings cannot span more than 2 lines.", "");
-				}
-				else
-				{
-					nextLine = true;
-				}
+				throw error((line - 1), "Strings cannot span more than one line.", "");
 			}		
 			advance();
 		}
