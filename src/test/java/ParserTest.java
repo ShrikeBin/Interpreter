@@ -44,12 +44,14 @@ public class ParserTest
 
         if(ErrorHandler.errors.size() != 0)
 		{
-			ErrorHandler.flush();
+            ErrorHandler.flush();
+            return "";
 		}
 
         Parser parser = new Parser(tokens);
         List<Declaration> program = parser.parse();
 
+        ErrorHandler.flush();
         return new ASTPrinter().print(program);
     }
 

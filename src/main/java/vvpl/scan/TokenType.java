@@ -50,9 +50,9 @@ public enum TokenType
     COMMA,            // ,
     SEMICOLON,        // ;
     MINUS,            // -
-    PLUS,             // +
-    STAR,             // *
-    SLASH,            // /
+    // PLUS,             // +
+    // STAR,             // *
+    // SLASH,            // /
 
     // Comparison
     EQUALS,           // ==

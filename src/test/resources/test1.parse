@@ -1,160 +1,163 @@
-VarDecl
-  b
-  Bool
-  LiteralExpr
-    true
-VarDecl
-  number1
-  Number
-  LiteralExpr
-    123.0
-VarDecl
-  number2
-  Number
-  UnaryExpr
-    -
-    LiteralExpr
-      123.0
-VarDecl
-  numberFloat
-  Number
-  LiteralExpr
-    12.3
-VarDecl
-  someName
-  String
-  LiteralExpr
-    "123 "
-VarDecl
-  _only_declared
-  String
-ExprStmt
-  BinaryExpr
-    VariableExpr
-      number1
-    add
-    VariableExpr
-      numberFloat
-ExprStmt
-  LogicalExpr
-    VariableExpr
-      number1
-    EQUALS
-    VariableExpr
-      number2
-ExprStmt
-  UnaryExpr
-    NOT
-    LiteralExpr
-      true
-ExprStmt
-  LogicalExpr
-    LiteralExpr
-      true
-    OR
-    LiteralExpr
-      false
-VarDecl
-  min
-  Number
-  LiteralExpr
-    0.0
-VarDecl
-  max
-  Number
-ExprStmt
-  AssignExpr
-    max
-    BinaryExpr
-      VariableExpr
-        number1
-      add
-      VariableExpr
-        number2
-VarDecl
-  average
-  Number
-  BinaryExpr
-    BinaryExpr
-      VariableExpr
-        min
-      add
-      VariableExpr
-        max
-    divide
-    LiteralExpr
-      2.0
-BlockStmt
-  PrintStmt
-    LiteralExpr
-      "Hello earth !"
-  PrintStmt
-    LiteralExpr
-      "Hello, SDU! This is a computer program."
-IfStmt
-  LogicalExpr
-    VariableExpr
-      number1
-    EQUALS
-    VariableExpr
-      number2
-  BlockStmt
-    PrintStmt
-      LiteralExpr
-        "yes"
-  BlockStmt
-    PrintStmt
-      LiteralExpr
-        "no"
-BlockStmt
-  IfStmt
-    LogicalExpr
-      VariableExpr
-        number1
-      EQUALS
-      VariableExpr
-        someName
-    BlockStmt
-      PrintStmt
-        VariableExpr
-          number1
-    BlockStmt
-      PrintStmt
-        LiteralExpr
-          "nej"
-  VarDecl
-    a
-    Number
-    LiteralExpr
-      1.0
-  WhileStmt
-    LogicalExpr
-      VariableExpr
-        a
-      LESS
-      LiteralExpr
-        10.0
-    BlockStmt
-      PrintStmt
-        VariableExpr
-          a
-      ExprStmt
-        AssignExpr
-          a
-          BinaryExpr
-            VariableExpr
-              a
-            add
-            LiteralExpr
-              1.0
-      ExprStmt
-        AssignExpr
-          a
-          BinaryExpr
-            LiteralExpr
-              5.0
-            subtract
-            CastExpr
-              Number
-              LiteralExpr
-                "4"
+Program
+├── VarDecl
+│   ├── b
+│   ├── Bool
+│   └── LiteralExpr
+│       └── true
+├── VarDecl
+│   ├── number1
+│   ├── Number
+│   └── LiteralExpr
+│       └── 123
+├── VarDecl
+│   ├── number2
+│   ├── Number
+│   └── UnaryExpr
+│       ├── -
+│       └── LiteralExpr
+│           └── 123
+├── VarDecl
+│   ├── numberFloat
+│   ├── Number
+│   └── LiteralExpr
+│       └── 12.3
+├── VarDecl
+│   ├── someName
+│   ├── String
+│   └── LiteralExpr
+│       └── "123 "
+├── VarDecl
+│   ├── _only_declared
+│   └── String
+├── ExprStmt
+│   └── BinaryExpr
+│       ├── VariableExpr
+│       │   └── number1
+│       ├── add
+│       └── VariableExpr
+│           └── numberFloat
+├── ExprStmt
+│   └── BinaryExpr
+│       ├── VariableExpr
+│       │   └── number1
+│       ├── EQUALS
+│       └── VariableExpr
+│           └── number2
+├── ExprStmt
+│   └── UnaryExpr
+│       ├── NOT
+│       └── LiteralExpr
+│           └── true
+├── ExprStmt
+│   └── LogicalExpr
+│       ├── LiteralExpr
+│       │   └── true
+│       ├── OR
+│       └── LiteralExpr
+│           └── false
+├── VarDecl
+│   ├── min
+│   ├── Number
+│   └── LiteralExpr
+│       └── 0
+├── VarDecl
+│   ├── max
+│   ├── Number
+│   └── LiteralExpr
+│       └── 0
+├── ExprStmt
+│   └── AssignExpr
+│       ├── max
+│       └── BinaryExpr
+│           ├── VariableExpr
+│           │   └── number1
+│           ├── add
+│           └── VariableExpr
+│               └── number2
+├── VarDecl
+│   ├── average
+│   ├── Number
+│   └── BinaryExpr
+│       ├── BinaryExpr
+│       │   ├── VariableExpr
+│       │   │   └── min
+│       │   ├── add
+│       │   └── VariableExpr
+│       │       └── max
+│       ├── divide
+│       └── LiteralExpr
+│           └── 2
+├── BlockStmt
+│   ├── PrintStmt
+│   │   └── LiteralExpr
+│   │       └── "Hello earth !"
+│   └── PrintStmt
+│       └── LiteralExpr
+│           └── "Hello, SDU! This is a computer program."
+├── IfStmt
+│   ├── BinaryExpr
+│   │   ├── VariableExpr
+│   │   │   └── number1
+│   │   ├── EQUALS
+│   │   └── VariableExpr
+│   │       └── number2
+│   ├── BlockStmt
+│   │   └── PrintStmt
+│   │       └── LiteralExpr
+│   │           └── "yes"
+│   └── BlockStmt
+│       └── PrintStmt
+│           └── LiteralExpr
+│               └── "no"
+└── BlockStmt
+    ├── IfStmt
+    │   ├── BinaryExpr
+    │   │   ├── VariableExpr
+    │   │   │   └── number1
+    │   │   ├── EQUALS
+    │   │   └── VariableExpr
+    │   │       └── someName
+    │   ├── BlockStmt
+    │   │   └── PrintStmt
+    │   │       └── VariableExpr
+    │   │           └── number1
+    │   └── BlockStmt
+    │       └── PrintStmt
+    │           └── LiteralExpr
+    │               └── "nej"
+    ├── VarDecl
+    │   ├── a
+    │   ├── Number
+    │   └── LiteralExpr
+    │       └── 1
+    └── WhileStmt
+        ├── BinaryExpr
+        │   ├── VariableExpr
+        │   │   └── a
+        │   ├── LESS
+        │   └── LiteralExpr
+        │       └── 10
+        └── BlockStmt
+            ├── PrintStmt
+            │   └── VariableExpr
+            │       └── a
+            ├── ExprStmt
+            │   └── AssignExpr
+            │       ├── a
+            │       └── BinaryExpr
+            │           ├── VariableExpr
+            │           │   └── a
+            │           ├── add
+            │           └── LiteralExpr
+            │               └── 1
+            └── ExprStmt
+                └── AssignExpr
+                    ├── a
+                    └── BinaryExpr
+                        ├── LiteralExpr
+                        │   └── 5
+                        ├── subtract
+                        └── CastExpr
+                            ├── Number
+                            └── LiteralExpr
+                                └── "4"

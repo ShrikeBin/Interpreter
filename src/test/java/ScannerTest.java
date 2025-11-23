@@ -39,17 +39,13 @@ public class ScannerTest
         Scanner scanner = new Scanner(source);
         StringBuilder sb = new StringBuilder();
 
-        if(ErrorHandler.errors.size() != 0)
-		{
-			ErrorHandler.flush();
-			System.err.println("[Errors during Scanning]");
-		}
-
         for (Token token : scanner.scanTokens()) 
         {
             sb.append(token.toString());
             sb.append("\n");
         }
+
+        ErrorHandler.flush();
         return sb.toString();
     }
 

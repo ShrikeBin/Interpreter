@@ -12,6 +12,7 @@ import vvpl.scan.Scanner;
 import vvpl.parse.Parser;
 import vvpl.scan.Token;
 import vvpl.semantics.Canary;
+import vvpl.ast.visitors.*;
 
 public class Vvpl 
 {
@@ -31,6 +32,11 @@ public class Vvpl
 		Scanner scanner = new Scanner(source);
 		List<Token> tokens = scanner.scanTokens();
 
+		// print the tokens
+		for (Token token : tokens) {
+			System.out.println(token);
+		}
+
 		if(ErrorHandler.errors.size() != 0)
 		{
 			ErrorHandler.flush();
@@ -40,6 +46,10 @@ public class Vvpl
 
 		Parser parser = new Parser(tokens);
 		List<Declaration> program = parser.parse();
+
+		// print the tree
+		ASTPrinter printer = new ASTPrinter();
+		System.out.println(printer.print(program));
 
 		if(ErrorHandler.errors.size() != 0)
 		{
@@ -63,13 +73,9 @@ public class Vvpl
 		{
 			interpreter.interpret(program);
 		}
-		catch (RuntimeError error) 
-		{
-			ErrorHandler.error(-1, "[Interpreter] Runtime Error: " + error.getMessage());
-		}
 		catch (Exception error) 
 		{
-			ErrorHandler.error(-1, "[Unknown Error]:" + error.getMessage());
+			System.err.println("[ERROR DURING INTERPRETATION]: " + error);
 		}
 	}
 }

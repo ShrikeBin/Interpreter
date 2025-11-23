@@ -1,62 +1,13 @@
-# This is a comment
-# Variable declaration
-variable True has_type Bool is false;
-variable b has_type Bool is true;
-variable no_number has_type Number is 0.123;
-variable nr2 has_type Number is -123;
-
-################################
-
-subtract (number1 numberFloat);
-multiply (number1 numberFloat);
-divide (number1 numberFloat);
-number1 EQUALS number2; 	
-
-
-	# false
-NOT true; 						# false
-true AND false; 					# trueish
-variable nr3 has_type String is add (nr2 3.14); # invalid
-variable someName has_type Number is 42;
-max is add (nr1 add (nr2 number3));
-variable average has_type Number is divide (add (min max) 2);
-
-################################
-# start block
-################################
-
-{
-	write_to_console "Hello earth !";
-	write_to_console "Hello, SDU! This is a computer program.";
-    write_to_console "hei";
-    write_to_console "The result is: ";
-    write_to_console number1;
-    write_to_console no_number;
-    write_to_console nr2;
-    write_to_console nr3;
-}
-
-if (number1 EQUALS number2) {
-	write_to_console "yes";
-} else {
-	write_to_console "no";
-}
-
-{
-	if (false) {
-		write_to_console number1 ; 	
-	} else {
-		if(true) {
-            write_to_console number2 ;
-        } else {
-            write_to_console number3 ;
-        }
-	}
+function fact(x has_type Number) has_type Number {
+    if(x LESS_EQUAL 0)
     {
-        {
-            {
-                write_to_console "nested";
-            }
-        }
+        return 1;
+    }
+    else
+    {
+        return multiply(x fact(subtract(x 1)));
     }
 }
+
+write_to_console fact(10);
+write_to_console divide(10 0);

@@ -113,14 +113,14 @@ public class Scanner
 			case ';': addToken(TokenType.SEMICOLON, ";"); break;
 
 			// Multi characters and arithmetic
-			case '!': if (match('=')) addToken(TokenType.NOT_EQUALS, "!="); else addToken(TokenType.NOT,"!"); break;
-			case '=': if (match('=')) addToken(TokenType.EQUALS, "=="); else addToken(TokenType.ASSIGN, "="); break;
-			case '<': if (match('=')) addToken(TokenType.LESS_EQUAL, "<="); else addToken(TokenType.LESS, "<"); break;
-			case '>': if (match('=')) addToken(TokenType.GREATER_EQUAL, ">="); else addToken(TokenType.GREATER, ">"); break;
-			case '+': addToken(TokenType.PLUS, "+"); break;
 			case '-': addToken(TokenType.MINUS, "-"); break;
-			case '*': addToken(TokenType.STAR, "*"); break;
-			case '/': addToken(TokenType.SLASH, "/"); break;
+			// case '!': if (match('=')) addToken(TokenType.NOT_EQUALS, "!="); else addToken(TokenType.NOT,"!"); break;
+			// case '=': if (match('=')) addToken(TokenType.EQUALS, "=="); else addToken(TokenType.ASSIGN, "="); break;
+			// case '<': if (match('=')) addToken(TokenType.LESS_EQUAL, "<="); else addToken(TokenType.LESS, "<"); break;
+			// case '>': if (match('=')) addToken(TokenType.GREATER_EQUAL, ">="); else addToken(TokenType.GREATER, ">"); break;
+			// case '+': addToken(TokenType.PLUS, "+"); break;
+			// case '*': addToken(TokenType.STAR, "*"); break;
+			// case '/': addToken(TokenType.SLASH, "/"); break;
 
 			// comments
 			case '#':

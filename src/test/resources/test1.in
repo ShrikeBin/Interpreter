@@ -18,7 +18,7 @@ number1 EQUALS number2; 		# false
 NOT true; 						# false
 true OR false; 					# true
 variable min has_type Number is 0;
-variable max has_type Number;
+variable max has_type Number is 0;
 max is add (number1 number2);
 variable average has_type Number is divide (add (min max) 2);
 

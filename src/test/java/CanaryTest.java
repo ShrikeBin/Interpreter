@@ -45,6 +45,7 @@ public class CanaryTest
         if(ErrorHandler.errors.size() != 0)
 		{
 			ErrorHandler.flush();
+            return "";
 		}
 
         Parser parser = new Parser(tokens);
@@ -53,6 +54,7 @@ public class CanaryTest
         if(ErrorHandler.errors.size() != 0)
 		{
 			ErrorHandler.flush();
+            return "";
 		}
 
         Canary canary = new Canary(decl);
@@ -65,6 +67,7 @@ public class CanaryTest
             sb.append("\n");
         }
 
+        ErrorHandler.flush();
         return sb.toString();
     }
 

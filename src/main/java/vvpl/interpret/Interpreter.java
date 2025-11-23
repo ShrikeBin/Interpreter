@@ -15,7 +15,6 @@ import vvpl.ast.visitors.Visitor;
 
 import vvpl.errors.*;
 
-import vvpl.scan.Token;
 import vvpl.scan.TokenType;
 
 public class Interpreter implements Visitor<Object>
@@ -112,7 +111,7 @@ public class Interpreter implements Visitor<Object>
 
         if (left == null || right == null)
         {
-            throw new RuntimeError("Something evaluated to null in Logical expression null");
+            throw runtimeError(expr.operator.line, "Something evaluated to null in Logical expression null");
         }
 
         if(left instanceof Boolean)
@@ -175,7 +174,7 @@ public class Interpreter implements Visitor<Object>
 
         if (left == null || right == null)
         {
-            throw new RuntimeError("Something evaluated to null in Binary expression");
+            throw runtimeError(expr.operator.line, "Something evaluated to null in Binary expression");
         }
         
         if(left instanceof Boolean)
@@ -215,7 +214,7 @@ public class Interpreter implements Visitor<Object>
                 case DIV:
                     if ((Double)right == 0) 
                     {
-                        throw new RuntimeError("Division by zero idiot.");
+                        throw runtimeError(expr.operator.line ,"Division by zero idiot.");
                     }
                     return (Double)left / (Double)right;
                 default:
@@ -246,7 +245,7 @@ public class Interpreter implements Visitor<Object>
         String targetType = expr.type.lexeme.toLowerCase();
         if(casted == null)
         {
-            throw new RuntimeError("Cast evaluated to null");
+            throw runtimeError(expr.type.line, "Cast evaluated to null");
         }
         String castedType = casted.getClass().getSimpleName().toLowerCase();
 
@@ -352,7 +351,7 @@ public class Interpreter implements Visitor<Object>
             Object condition = evaluate(stmt.condition);
             if(!(condition instanceof Boolean))
             {
-                throw new RuntimeError("WHILE condition evaluated to non Boolean value");
+                throw runtimeError(stmt.keyword.line, "WHILE condition evaluated to non Boolean value");
             }
             if(!(Boolean)condition)
             {
@@ -382,7 +381,7 @@ public class Interpreter implements Visitor<Object>
     { 
         if(!inFunction)
         {
-            throw new RuntimeError("Return statements can only be used inside functions.");
+            throw runtimeError(stmt.keyword.line,"Return statements can only be used inside functions.");
         }
 
         throw new Returnable(evaluate(stmt.value)); 
@@ -395,5 +394,11 @@ public class Interpreter implements Visitor<Object>
     public Void visitParamDecl(Param decl) 
     { 
         return null; 
+    }
+
+    private RuntimeError runtimeError(int line, String text)
+    {
+        ErrorHandler.error(line, text);
+        return new RuntimeError(text);
     }
 }

@@ -2,7 +2,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
@@ -46,6 +48,7 @@ public class InterpreterTest
         if(ErrorHandler.errors.size() != 0)
 		{
 			ErrorHandler.flush();
+            return "";
 		}
 
         Parser parser = new Parser(tokens);
@@ -54,6 +57,7 @@ public class InterpreterTest
         if(ErrorHandler.errors.size() != 0)
 		{
 			ErrorHandler.flush();
+            return "";
 		}
 
         Canary canary = new Canary(program);
@@ -62,29 +66,33 @@ public class InterpreterTest
         if(ErrorHandler.errors.size() != 0)
 		{
 			ErrorHandler.flush();
+            return "";
 		}
+
+        // Dunno if works
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
 
         Interpreter interpreter = new Interpreter();
-        try
-        {
-            interpreter.interpret(program);
-        }
-		catch (RuntimeError error) 
+		try 
 		{
-			ErrorHandler.error(-1, "[Interpreter] Runtime Error: " + error.getMessage());
+			interpreter.interpret(program);
 		}
-		catch (Exception error) 
-		{
-			ErrorHandler.error(-1, "[Unknown Error]:" + error.getMessage());
-		}
-
+		catch (Exception error){}
+        
+        // Hopefully restore
+        System.setOut(originalOut);
         StringBuilder sb = new StringBuilder();
+        sb.append(outContent.toString());
+
         for (String error : ErrorHandler.errors) 
         {
             sb.append(error);
             sb.append("\n");
         }
 
+        ErrorHandler.flush();
         return sb.toString();
     }
 

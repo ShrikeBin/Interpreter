@@ -67,6 +67,8 @@
 <ID,max> Literal: null, Line: 21
 <TYPE_DEF,has_type> Literal: null, Line: 21
 <NUMBER_TYPE,Number> Literal: null, Line: 21
+<ASSIGN,is> Literal: null, Line: 21
+<NUMBER,0> Literal: 0.0, Line: 21
 <SEMICOLON,;> Literal: null, Line: 21
 <ID,max> Literal: null, Line: 22
 <ASSIGN,is> Literal: null, Line: 22

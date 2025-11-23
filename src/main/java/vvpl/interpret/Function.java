@@ -5,7 +5,7 @@ import java.util.List;
 import vvpl.ast.Statement;
 import vvpl.ast.function.Param;
 import vvpl.ast.statement.Block;
-import vvpl.errors.RuntimeError;
+import vvpl.errors.*;
 
 public class Function 
 {
@@ -20,11 +20,6 @@ public class Function
         this.params = params;
         this.body = body;
         this.type = type;
-
-        if(!(body instanceof Block))
-        {
-            throw new RuntimeError(name + " Function body must be a block statement.");
-        }
     }
 
     public Object call(Interpreter interpreter, List<Object> args) 
@@ -56,10 +51,6 @@ public class Function
         } 
         catch (Returnable ret) 
         {
-            if(ret.value == null && !type.equals("void"))
-            {
-                throw new RuntimeError(name + " returned unexpected null");
-            }
             return ret.value;
         }
         finally
