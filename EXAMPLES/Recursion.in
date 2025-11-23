@@ -4,7 +4,7 @@
 # Input
 variable n has_type Number is 50;
 write_to_console cast_to String (n);
-write_to_console cast_to String (factorial(n));
+write_to_console factorial(n);
 
 
 function factorial(n has_type Number) has_type Number 

@@ -14,6 +14,9 @@ import vvpl.semantics.symbol.*;
 /*
 Scope-checks and then (if successful) type-checks each statement and expression
  */
+
+// TODO HANDLE VOIDS
+
 public class Canary implements Visitor<SymbolType> {
     private SymbolTable scope = new SymbolTable(ScopeKind.GLOBAL, null);
     private List<Declaration> program;

@@ -10,4 +10,8 @@ public class ErrorHandler
         System.err.println("[line " + line + "] Error" + ": " + message);
         errors.add("[line " + line + "] Error" + ": " + message);
     }
+    public static void flush()
+    {
+        errors.clear();
+    }
 }

@@ -1,101 +1,90 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.*;
 
 import vvpl.scan.Scanner;
 import vvpl.scan.Token;
+import vvpl.errors.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
-/**
- * @author Sandra Greiner
- * @version CompilerConstruction FT 2025
- */
-
-public class ScannerTest {
-
-    private static String inputFile1;
-    private static String inputFile2;
-    private static String inputByteString1;
-    private static String inputByteString2;
-    private static String expectedFile1;
-    private static String expectedFile2;
-   
+public class ScannerTest 
+{
+    private static List<Path> inputFiles;
 
     @BeforeAll
-    public static void prepareFiles() {
-        inputFile1  =    "src/test/resources/test1.in";
-        inputFile2  =    "src/test/resources/test2.in";
-        expectedFile1  = "src/test/resources/test1.scan";
-        expectedFile2  = "src/test/resources/test2.scan";
-        try {
-            inputByteString1 = new String(Files.readAllBytes(Paths.get(inputFile1)));
-            inputByteString2 = new String(Files.readAllBytes(Paths.get(inputFile2)));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static void setup() throws IOException 
+    {
+        Path dir = Paths.get("src/test/resources");
+        try (Stream<Path> stream = Files.list(dir)) 
+        {
+            inputFiles = stream
+                        .filter(p -> p.toString().endsWith(".in"))
+                        .sorted()
+                        .collect(Collectors.toList());
+        }
+        catch (IOException e) 
+        {
+            throw new IOException("Failed to list test resources in " + dir.toString(), e);
         }
     }
 
-    @Test
-    public void test1() {
-        Scanner lexer = new Scanner(inputByteString1);
-        List<Token> tokens = lexer.scanTokens();
+    private String generate(String source) 
+    {
+        Scanner scanner = new Scanner(source);
+        StringBuilder sb = new StringBuilder();
 
-        StringBuilder builder = new StringBuilder();
-        for (Token token : tokens) {
-            builder.append(token + System.lineSeparator());
-            if (token.lexeme.equals(";")) builder.append(System.lineSeparator());
+        if(ErrorHandler.errors.size() != 0)
+		{
+			ErrorHandler.flush();
+			System.err.println("[Errors during Scanning]");
+		}
+
+        for (Token token : scanner.scanTokens()) 
+        {
+            sb.append(token.toString());
+            sb.append("\n");
         }
-
-        String fileActual = builder.toString();
-        List<String> fileActualLines = Arrays.asList(fileActual.split("\\R"));
-
-        try {
-            List<String> fileExpectedLines = Files.readAllLines(Paths.get(expectedFile1));
-            for (int i = 0; i < fileExpectedLines.size(); i++) {
-                String actualLine = fileActualLines.get(i);
-                String expectedLine = fileExpectedLines.get(i);
-                assertTrue(actualLine.equals(expectedLine), 
-                "line " + i + " of source and target mismatch. " + System.lineSeparator() + 
-                "expected: " + expectedLine + System.lineSeparator() + 
-                " got: " + actualLine);            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail();
-        }
+        return sb.toString();
     }
 
-    @Test
-    public void test2() {
-        Scanner lexer = new Scanner(inputByteString2);
-        List<Token> tokens = lexer.scanTokens();
+    @TestFactory
+    public List<DynamicTest> generateTests() 
+    {
+        // Yes we are doing 'functional' Java here :)
+        return inputFiles.stream().map(inputPath -> 
+        {
+            String testName = inputPath.getFileName().toString();
+            Path expectedPath = Paths.get(inputPath.toString().replace(".in", ".scan"));
 
-        StringBuilder builder = new StringBuilder();
-        for (Token token : tokens) {
-            builder.append(token + System.lineSeparator());
-            //if (token.lexeme.equals(";")) builder.append(System.lineSeparator());
-        }
+            return DynamicTest.dynamicTest("l-LLVM translation test for " + testName, () -> 
+            {
+                String input = Files.readString(inputPath);
+                String expectedOut = Files.readString(expectedPath);
+                String actualOutput = generate(input);
 
-        String fileActual = builder.toString();
-        List<String> fileActualLines = Arrays.asList(fileActual.split("\\R"));
+                // if \n doesnt work use \\R -> matches all line terminators
+                List<String> expectedLines = Arrays.asList(expectedOut.split("\n"));
+                List<String> actualLines = Arrays.asList(actualOutput.split("\n"));
 
-        try {
-            List<String> fileExpectedLines = Files.readAllLines(Paths.get(expectedFile2));
-            for (int i = 0; i < fileExpectedLines.size(); i++) {
-                String actualLine = fileActualLines.get(i);
-                String expectedLine = fileExpectedLines.get(i);
-                assertTrue(actualLine.equals(expectedLine), 
-                "line " + i + " of source and target mismatch. " + System.lineSeparator() + 
-                "expected: " + expectedLine + System.lineSeparator() + 
-                " got: " + actualLine);            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail();
-        }
+                assertTrue(expectedLines.size() == actualLines.size(), "Line count mismatch in " + testName);
+
+                for (int i = 0; i < expectedLines.size(); i++) 
+                {
+                    String expected = expectedLines.get(i).trim();
+                    String actual = actualLines.get(i).trim();
+                    assertTrue(expected.equals(actual),
+                            "Mismatch in " + testName + 
+                            " line " + (i + 1) +
+                            "\nExpected: " + expected +
+                            "\nGot:      " + actual);
+                }
+            });
+        }).collect(Collectors.toList());
     }
 }

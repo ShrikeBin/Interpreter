@@ -10,13 +10,13 @@ import java.util.stream.*;
 import vvpl.scan.Scanner;
 import vvpl.scan.Token;
 import vvpl.ast.Declaration;
-import vvpl.ast.visitors.ASTPrinter;
 import vvpl.parse.*;
 import vvpl.errors.*;
+import vvpl.semantics.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ParserTest
+public class CanaryTest 
 {
     private static List<Path> inputFiles;
 
@@ -41,16 +41,31 @@ public class ParserTest
     {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
-
+        
         if(ErrorHandler.errors.size() != 0)
 		{
 			ErrorHandler.flush();
 		}
 
         Parser parser = new Parser(tokens);
-        List<Declaration> program = parser.parse();
+        List<Declaration> decl = parser.parse();
 
-        return new ASTPrinter().print(program);
+        if(ErrorHandler.errors.size() != 0)
+		{
+			ErrorHandler.flush();
+		}
+
+        Canary canary = new Canary(decl);
+		canary.check();
+
+        StringBuilder sb = new StringBuilder();
+        for (String error : ErrorHandler.errors) 
+        {
+            sb.append(error);
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     @TestFactory
@@ -60,7 +75,7 @@ public class ParserTest
         return inputFiles.stream().map(inputPath -> 
         {
             String testName = inputPath.getFileName().toString();
-            Path expectedPath = Paths.get(inputPath.toString().replace(".in", ".parse"));
+            Path expectedPath = Paths.get(inputPath.toString().replace(".in", ".canary"));
 
             return DynamicTest.dynamicTest("l-LLVM translation test for " + testName, () -> 
             {

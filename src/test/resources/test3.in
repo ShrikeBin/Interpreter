@@ -8,3 +8,5 @@ function fact(x has_type Number) has_type Number {
         return multiply(x fact(sub(x 1)));
     }
 }
+
+write_to_console fact(10);

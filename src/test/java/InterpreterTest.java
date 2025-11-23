@@ -10,13 +10,14 @@ import java.util.stream.*;
 import vvpl.scan.Scanner;
 import vvpl.scan.Token;
 import vvpl.ast.Declaration;
-import vvpl.ast.visitors.ASTPrinter;
 import vvpl.parse.*;
 import vvpl.errors.*;
+import vvpl.interpret.Interpreter;
+import vvpl.semantics.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ParserTest
+public class InterpreterTest 
 {
     private static List<Path> inputFiles;
 
@@ -41,7 +42,7 @@ public class ParserTest
     {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
-
+        
         if(ErrorHandler.errors.size() != 0)
 		{
 			ErrorHandler.flush();
@@ -50,7 +51,41 @@ public class ParserTest
         Parser parser = new Parser(tokens);
         List<Declaration> program = parser.parse();
 
-        return new ASTPrinter().print(program);
+        if(ErrorHandler.errors.size() != 0)
+		{
+			ErrorHandler.flush();
+		}
+
+        Canary canary = new Canary(program);
+		canary.check();
+
+        if(ErrorHandler.errors.size() != 0)
+		{
+			ErrorHandler.flush();
+		}
+
+        Interpreter interpreter = new Interpreter();
+        try
+        {
+            interpreter.interpret(program);
+        }
+		catch (RuntimeError error) 
+		{
+			ErrorHandler.error(-1, "[Interpreter] Runtime Error: " + error.getMessage());
+		}
+		catch (Exception error) 
+		{
+			ErrorHandler.error(-1, "[Unknown Error]:" + error.getMessage());
+		}
+
+        StringBuilder sb = new StringBuilder();
+        for (String error : ErrorHandler.errors) 
+        {
+            sb.append(error);
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     @TestFactory
@@ -60,7 +95,7 @@ public class ParserTest
         return inputFiles.stream().map(inputPath -> 
         {
             String testName = inputPath.getFileName().toString();
-            Path expectedPath = Paths.get(inputPath.toString().replace(".in", ".parse"));
+            Path expectedPath = Paths.get(inputPath.toString().replace(".in", ".out"));
 
             return DynamicTest.dynamicTest("l-LLVM translation test for " + testName, () -> 
             {
