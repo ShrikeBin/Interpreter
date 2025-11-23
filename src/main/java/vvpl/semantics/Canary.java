@@ -52,13 +52,13 @@ public class Canary implements Visitor<SymbolType> {
     public SymbolType visitFuncDecl(FuncDecl func) {
         if (scope.level() != ScopeKind.GLOBAL) {
             scopeError(func.name, "Cannot define a function in a non-global scope.");
-            // return null; // don't check a function in weird place
         } // keep checking
 
         scope = scope.newScope(ScopeKind.FUNCTION);
 
         SymbolType returnType = func.type != null ? SymbolType.map.get(func.type.type) : SymbolType.VOID;
         scope.add("$", new Symbol(SymbolKind.RETURN_PLACEHOLDER, returnType));
+
         for (Param param : func.params) {
             if (scope.get(param.name.lexeme) != null) { // allows for shadowing globals because of get() definition
                 scopeError(param.name, "Two parameters with the same name.");
@@ -75,6 +75,7 @@ public class Canary implements Visitor<SymbolType> {
     @Override
     public SymbolType visitVarDecl(VarDecl decl) {
         Boolean defined = scope.get(decl.name.lexeme) != null;
+        SymbolType variableType = SymbolType.map.get(decl.type.type);
 
         if (defined) { // doesn't allow shadowing
             scopeError(decl.name, "Redeclaration of variable.");
@@ -86,18 +87,17 @@ public class Canary implements Visitor<SymbolType> {
         }
         
         SymbolType initializerType = decl.initializer.accept(this);
-        
         if (initializerType == null) {
             return null; // something went wrong in initializer check
         }
         
-        if (initializerType != SymbolType.map.get(decl.type.type)) {
-            typeError(decl.name, "Cannot assign " + initializerType.toString() + " to " + SymbolType.map.get(decl.type.type).toString() + ".");
+        if (initializerType != variableType) {
+            typeError(decl.name, "Cannot assign " + initializerType.toString() + " to " + variableType.toString() + ".");
             return null; // incompatible types
         }
         
         if (!defined) { // don't redefine
-            scope.add(decl.name.lexeme, new Symbol(SymbolKind.VARIABLE, initializerType));
+            scope.add(decl.name.lexeme, new Symbol(SymbolKind.VARIABLE, variableType));
         }
         return null;
     }
@@ -342,16 +342,16 @@ public class Canary implements Visitor<SymbolType> {
             return castedType; // can always cast between same types
         }
 
-        if (castedType == SymbolType.STRING) {
-            return castedType; // can always cast to string
-        }
-
-        if ( // TODO: eval string? (its always hardcoded)
+        if ( // allowed casts TODO: eval string? (its always hardcoded)
+            (valueType == SymbolType.NUMBER && castedType == SymbolType.STRING) ||
+            (valueType == SymbolType.BOOL   && castedType == SymbolType.STRING) ||
             (valueType == SymbolType.STRING && castedType == SymbolType.NUMBER) ||
             (valueType == SymbolType.NUMBER && castedType == SymbolType.BOOL)
         ) {
             return castedType; // pottentially castable, might fail at runtime
         }
+
+        typeError(expr.type, "Cannot cast " + valueType.toString() + " as " + castedType.toString() + ".");
 
         return null;
     }
@@ -364,7 +364,9 @@ public class Canary implements Visitor<SymbolType> {
 
     @Override 
     public SymbolType visitPrintStmt(Print stmt) {
-        stmt.expression.accept(this); // can print anything
+        if (stmt.expression.accept(this) == SymbolType.VOID) {
+            typeError(stmt.keyword, "Cannot print VOID type.");
+        } // can print anything else
         return null; 
     }
 

@@ -36,6 +36,8 @@ f(x);
         y is "Hello";
     }
 
+    cast_to Bool "Hello";
+    x is f();
     write_to_console(y);
 }
 
