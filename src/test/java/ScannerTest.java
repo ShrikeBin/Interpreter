@@ -20,7 +20,8 @@ public class ScannerTest
     @BeforeAll
     public static void setup() throws IOException 
     {
-        Path dir = Paths.get("src/test/resources");
+        ErrorHandler.setPrintsOff();
+        Path dir = Paths.get("src/test/resources/scan");
         try (Stream<Path> stream = Files.list(dir)) 
         {
             inputFiles = stream
@@ -45,8 +46,17 @@ public class ScannerTest
             sb.append("\n");
         }
 
-        ErrorHandler.flush();
-        return sb.toString();
+        if(ErrorHandler.errors.size() != 0)
+		{
+            String out = ErrorHandler.getErrors();
+            ErrorHandler.flush();
+            return out;
+		}
+        else
+        {
+            ErrorHandler.flush();
+            return sb.toString();
+        }
     }
 
     @TestFactory

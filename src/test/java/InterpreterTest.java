@@ -26,7 +26,8 @@ public class InterpreterTest
     @BeforeAll
     public static void setup() throws IOException 
     {
-        Path dir = Paths.get("src/test/resources");
+        ErrorHandler.setPrintsOff();
+        Path dir = Paths.get("src/test/resources/interpret");
         try (Stream<Path> stream = Files.list(dir)) 
         {
             inputFiles = stream

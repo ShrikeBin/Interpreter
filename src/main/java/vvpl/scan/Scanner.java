@@ -209,6 +209,7 @@ public class Scanner
 			if (peek() == '\n') 
 			{
 				line++;
+				advance();
 				throw error((line - 1), "Strings cannot span more than one line.", "");
 			}		
 			advance();

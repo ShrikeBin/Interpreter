@@ -29,13 +29,15 @@ public class Vvpl
 
 	private static void run(String source) 
 	{
+		ErrorHandler.setPrintsOn();
+
 		Scanner scanner = new Scanner(source);
 		List<Token> tokens = scanner.scanTokens();
 
-		// print the tokens
-		for (Token token : tokens) {
-			System.out.println(token);
-		}
+		// // print the tokens
+		// for (Token token : tokens) {
+		// 	System.out.println(token);
+		// }
 
 		if(ErrorHandler.errors.size() != 0)
 		{
@@ -47,9 +49,9 @@ public class Vvpl
 		Parser parser = new Parser(tokens);
 		List<Declaration> program = parser.parse();
 
-		// print the tree
-		ASTPrinter printer = new ASTPrinter();
-		System.out.println(printer.print(program));
+		// // print the tree
+		// ASTPrinter printer = new ASTPrinter();
+		// System.out.println(printer.print(program));
 
 		if(ErrorHandler.errors.size() != 0)
 		{

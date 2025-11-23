@@ -23,7 +23,8 @@ public class CanaryTest
     @BeforeAll
     public static void setup() throws IOException 
     {
-        Path dir = Paths.get("src/test/resources");
+        ErrorHandler.setPrintsOff();
+        Path dir = Paths.get("src/test/resources/canary");
         try (Stream<Path> stream = Files.list(dir)) 
         {
             inputFiles = stream
@@ -60,15 +61,10 @@ public class CanaryTest
         Canary canary = new Canary(decl);
 		canary.check();
 
-        StringBuilder sb = new StringBuilder();
-        for (String error : ErrorHandler.errors) 
-        {
-            sb.append(error);
-            sb.append("\n");
-        }
+        String out = ErrorHandler.getErrors();
 
         ErrorHandler.flush();
-        return sb.toString();
+        return out;
     }
 
     @TestFactory

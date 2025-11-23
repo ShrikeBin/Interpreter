@@ -23,7 +23,8 @@ public class ParserTest
     @BeforeAll
     public static void setup() throws IOException 
     {
-        Path dir = Paths.get("src/test/resources");
+        ErrorHandler.setPrintsOff();
+        Path dir = Paths.get("src/test/resources/parse");
         try (Stream<Path> stream = Files.list(dir)) 
         {
             inputFiles = stream
@@ -51,8 +52,17 @@ public class ParserTest
         Parser parser = new Parser(tokens);
         List<Declaration> program = parser.parse();
 
-        ErrorHandler.flush();
-        return new ASTPrinter().print(program);
+        if(ErrorHandler.errors.size() != 0)
+		{
+            String out = ErrorHandler.getErrors();
+            ErrorHandler.flush();
+            return out;
+		}
+        else
+        {
+            ErrorHandler.flush();
+            return new ASTPrinter().print(program);
+        }
     }
 
     @TestFactory
