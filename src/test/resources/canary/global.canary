@@ -1,0 +1,4 @@
+[line 8] Error: Scope Error at 'counter': Variable not defined.
+[line 9] Error: Scope Error at 'counter': Variable not defined.
+[line 9] Error: Scope Error at 'counter': Variable not defined.
+[line 24] Error: Scope Error at 'fibIterative': Function not defined

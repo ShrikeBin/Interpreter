@@ -1,0 +1,16 @@
+function lotery(n has_type Number) has_type Number 
+{
+    if (cast_to Bool n ) 
+    {
+       return "You Win!";
+    }
+    else
+    {
+        return 0;
+    }
+    return false;
+}
+
+# Input
+variable n has_type Number is 13;
+write_to_console lotery(n);

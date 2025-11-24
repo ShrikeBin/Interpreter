@@ -1,0 +1,2 @@
+[line 5] Error: Type Error at 'return': Wrong return type. Expected: NUMBER, got: STRING.
+[line 11] Error: Type Error at 'return': Wrong return type. Expected: NUMBER, got: BOOL.
