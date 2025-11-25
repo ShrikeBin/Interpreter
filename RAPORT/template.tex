@@ -1,0 +1,198 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[a4paper,margin=2.4cm]{geometry} \linespread{1.25} 
+\usepackage[english]{babel}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[page,toc]{appendix}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage[T1]{fontenc}	
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\DeclareGraphicsExtensions{.png}	\graphicspath{{figures/}}               
+\renewcommand{\arraystretch}{1.15}
+
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\lfoot{}
+\cfoot{}
+\rfoot{\thepage{}}
+
+\pagestyle{fancy}
+\lhead{Group X}
+\chead{Title}
+\rhead{\today}
+
+\begin{document}
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+% Defines a new command for 
+% horizontal lines, change thickness here
+
+\center % Centre everything on the page
+
+	%------------------------------------------------
+	%	Headings
+	%------------------------------------------------
+
+	\textsc{\LARGE University of Southern Denmark}\\[1.5cm]
+	% Main heading such as the name of your university/college
+
+	\textsc{\Large Department of Mathematics and Computer Science}\\[0.5cm]
+	%Major heading such as course name
+
+	\textsc{\large DM546: Compiler Construction}\\[0.5cm]
+	% COURSE ID AND NAME
+
+	%------------------------------------------------
+	%	Title
+	%------------------------------------------------
+
+	\HRule\\[0.7cm]
+
+	{\huge\bfseries Title}\\[0.4cm] % Title of your document
+
+	\HRule\\[1.0cm]
+
+	%------------------------------------------------
+	%	Author(s)
+	%------------------------------------------------
+	\large
+	\textsc{Authors:}\\ \bigskip
+	\begin{minipage}[t]{0.45\textwidth}
+	    \begin{center}
+		    \normalsize
+		    Firstname Lastname\\
+		    x\@x.x\\ \bigskip
+		    Z Z\\
+		    x\@x.x\\ \bigskip
+
+	   \end{center}
+	\end{minipage}
+	~
+	\begin{minipage}[t]{0.45\textwidth}
+	    \begin{center}
+		    \normalsize
+		    Y Y\\
+		    x\@x.x\\ \bigskip
+		\end{center}
+	\end{minipage}
+	
+
+	%------------------------------------------------
+	%	Date
+	%------------------------------------------------
+
+	\vfill\vfill\vfill % Position the date 3/4 down the remaining page
+
+	{\large \today}
+
+	%------------------------------------------------
+	%	Logo
+	%------------------------------------------------
+
+	\vfill\vfill
+	\begin{centering}
+	\includegraphics[width=0.3\textwidth]{SDU_logo}\\[1cm]
+	% Include a 
+% department/university logo - this will require the graphicx package
+	\end{centering}
+	
+%-------------------------------------------------------------------------------
+
+	\vfill % Push the date up 1/4 of the remaining page
+
+\end{titlepage}
+
+\pagenumbering{arabic}
+
+\section{Preliminaries}
+
+If you used specific setups, not-well-known tools, or libraries briefly introduce them. 
+Provide references to those artifacts. 
+Note: you do not need to repeat what we discussed in the lectures and exercises.
+
+\section{Technical Description}
+
+Here you explain the technical work you have carried out. You should present the
+overall architecture of your interpreter. 
+Try to explain the development choices you made taking into account important properties, 
+such as reusability and performance.
+
+\subsection{Architecture}
+  
+Please provide at least \textbf{one diagram} of the entire 
+architecture and describe it. How do the individual elements of the interpreter (i.e., scanner, parser, etc.) work together to execute a given program? Have you applied specific design patterns?
+
+\subsection{Implementation}
+
+If you have implemented specific algorithms or used functionality not covered in the lecture, please explain it here.
+Which kind of design decisions did you take? Answer the following questions in the respective sections.
+\begin{itemize}[noitemsep]
+	\item How do you recognize tokens in the Scanner?
+	\item How does the Parser work?
+	\item How do you perform the semantic analyses?
+	\item How do you handle the casting of types?
+%	\item How do you (or the grammar) treat the dangling-else problem?
+%	\item Do you allow for syntactic sugar? If so, please report what and where.
+%	\item {What do you check in the scope analysis?}
+%	\item {What do you check in the type analysis?}
+	\item {How do you handle functions?}
+	\item What tasks are performed by the interpreter?
+	\item How and when do you report errors?
+\end{itemize}
+\subsubsection{Syntactic Analysis} 
+\subsubsection{Semantic Analysis} 
+\subsubsection{Tree-Walk Interpretation} 
+    
+\subsubsection{Monitoring and Logging} 
+Do you trace the state of the interpreter and its components (i.e., the scanner, parser, etc)?
+    
+\subsection{Testing \& Evaluation}
+
+How did you test your interpreter? Which coverage criterion did you apply?\\
+Describe the test setup and the test inputs with their expected outputs.
+If you have documented this in the source code a link and submission of the generated JavaDoc is also fine.
+
+If the provided tests have been changed or do not work, please explain here what tests fail, why and what it would require to fix them.
+
+\section{Teamwork Organization}
+
+Describe how you organized the work together in the team? How did you communicate, implement and distribute tasks? \\
+Additionally, reflect on your individual learning outcomes (particularly if you worked alone).
+%If you worked alone, add the reflection of the individual report here.
+
+\section{Discussion}
+
+In this section you review possible
+alternative solutions to the same challenge you have tried to address in your
+project, or alternative methodologies that you may have followed (e.g., choice
+of other technologies for implementing the project). Provide a discussion on the
+implications of your choices in the design of your work and the
+technologies/techniques that you have used.
+
+Discuss what are the shortcomings/limitations of
+your project, possibly explaining how they could be solved or mitigated.
+    
+
+    \label{lastpage} % Allows using the page number of this page as the last in 
+% the footer
+    \newpage
+    \pagenumbering{gobble} % Stop numbering pages
+    \rfoot{} % Remove page number from footer
+
+% \bibliographystyle{plain}
+% \bibliography{xxx.bib}
+    
+
+% \appendix
+% \section{Whatever you want to add}
+
+\end{document}
