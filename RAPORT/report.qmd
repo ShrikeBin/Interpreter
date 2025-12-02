@@ -1,0 +1,413 @@
+---
+format:
+    pdf:
+        template: template.tex
+        fig-cap-location: bottom
+        keep-tex: true
+mainfont: Latin Modern Roman
+sansfont: Latin Modern Roman
+---
+
+# Preliminaries
+
+We implemented the interpreter using standard tools and libraries available in Java.
+No parser generators or external frameworks were used.
+
+# Technical Description
+
+## Architecture
+
+As shown below on the diagrams - the main class `VVPLController` takes in the filepath of the file to interpret and:
+
+1. Runs the source code through the `Scanner` that generates tokens
+2. Only when the `Scanner` succeeded - runs the tokens through the `Parser` that generates the Abstract Syntax Tree (it's basic parent node being `Declaration`)
+3. Only when the `Parser` succeeded - runs the `Declaration`s (AST) through the Semantic Checker (called `Canary` here, because it checks everything at once before the final evaluation - like the bird)
+4. And finally, only when `Canary` succeeded - runs the `Interpreter` on the AST
+
+If at any point in this chain of execution an error appears - the static `ErrorHandler` class is used to store all the errors and print them all at the end of a phase (eg. during parsing) to allow the program to check for all the error in that phase, not just the first encountered one. This is also visible on the activity diagram below. \newline
+
+### Class Diagram
+
+```{dot}
+digraph ClassDiagram {
+
+    graph [splines=true, rankdir=TB];
+    node  [shape=record, fontname="Helvetica"];
+
+    // --- Classes ---
+    VvplController [
+        label="{ VvplController | + main(filePath) : void }"
+    ];
+
+    ErrorHandler [
+        label="{ \<\<static\>\> \n Error Handler | 
+        + errors : List\<String\> | 
+        + error(line : int, message : String) : void }"
+    ];
+
+    Scanner [
+        label="{ Scanner | 
+        - keywords : Map\<String, TokenType\> |
+        + Scanner(source : String) \n
+        + scanTokens() : List\<Token\> }"
+    ];
+
+    Parser [
+        label="{ Parser | 
+        + Parser(tokens : List\<Token\>) \n
+        + parse() : List\<Declaration\> }"
+    ];
+
+    Canary [
+        label="{ Canary |
+        - scope : SymbolTable |
+        + Canary(program : List\<Declaration\>) \n
+        + check() : void }"
+    ];
+
+    Interpreter [
+        label="{ Interpreter |
+        + env : Environment |
+        + interpret(program : List\<Declaration\>) \n}"
+    ];
+
+    Declaration [
+        label="{ \<\<abstract\>\> \n Declaration | 
+        + accept(visitor : Visitor) }"
+    ];
+
+    Statement [
+        label="{ \<\<abstract\>\> \n Statement }"
+    ];
+
+    Expression [
+        label="{ \<\<abstract\>\> \n Expression }"
+    ];
+
+    Visitor [
+        label="{ \<\<Interface\>\> \n Visitor |
+        + visitPrintStmt(stmt : Print) \n 
+        + visitAssignExpr(expr : Assign) \n 
+        ... }"
+    ]
+
+    Token [
+        label="{ Token | 
+        + type : TokenType \n 
+        + lexeme : String \n 
+        + literal : Object \n 
+        + line : int }"
+    ]
+
+    FunDecl [
+        label="{ FunDecl | 
+        + name : Token \n 
+        + params : List\<Param\> \n 
+        + type : Token \n 
+        + body : Statement }"
+    ]
+
+    VarDecl [
+        label="{ VarDecl | 
+        + name : Token \n 
+        + type : Token \n 
+        + initializer : Expression }"
+    ]
+
+    ASTPrinter [
+        label="{ ASTPrinter | 
+        + print() : String }"
+    ]
+
+    SymbolTable [
+        label="{ SymbolTable | 
+        - kind : ScopeKind (FUNCTION \| GLOBAL \| BLOCK) \n 
+        - parent : SymbolTable \n 
+        - scope : Map\<String, Symbol\> |
+        + add(name : String, symbol : Symbol) : void \n 
+        + get(name : String) : Symbol \n 
+        + newScope(kind : ScopeKind) : SymbolTable \n 
+        + endScope() : SymbolTable \n }"
+    ]
+
+    Symbol [
+        label="{ Symbol | 
+        + kind : VARIABLE \| FUNCTION \| RETURN_PLACEHOLDER \n 
+        + type : SymbolType (NUMBER \| STRING \| BOOL \| VOID) \n 
+        + \<\<optional\>\> paramTypes : SymbolType }"
+    ]
+
+    Environment [
+        label="{ Environment | 
+        - parent : Environment \n 
+        + scope : Map\<String, Object\> }"
+    ]
+
+    Object [
+        label=" Object "
+    ]
+
+    Function [
+        label="{ Function | 
+        - name : String \n 
+        - params : List\<Param\> \n 
+        - body : Statement | 
+        + call(i : Interpreter, args : List\<Object\>) : Object }"
+    ]
+
+    Returnable [
+        label="{ \<\<extends RuntimeException\>\> \n 
+        Returnable | 
+        + value : Object }"
+    ]
+
+    Stmts [label="..."];
+    Exprs [label="..."];
+
+    // --- Relationships ---
+    VvplController -> Scanner [
+        arrowhead="open",
+        label="runs"
+    ]
+
+    VvplController -> Parser [
+        arrowhead="open",
+        label="runs"
+    ]
+
+    VvplController -> Canary [
+        arrowhead="open",
+        label="runs"
+    ]
+
+    VvplController -> Interpreter [
+        arrowhead="open",
+        label="runs"
+    ]
+
+    Parser -> Declaration [
+        arrowhead="open",
+        label="creates"
+    ]
+
+    Scanner -> Token [
+        arrowhead="open",
+        label="creates"
+    ]
+
+    Statement -> Declaration [
+        arrowhead="onormal"
+    ]
+
+    Expression -> Statement [
+        arrowhead="onormal"
+    ]
+
+    Exprs -> Expression [
+        arrowhead="onormal"
+    ]
+
+    Stmts -> Statement [
+        arrowhead="onormal"
+    ]
+
+    Declaration -> Statement [
+        style=invis
+    ]
+
+    Statement -> Expression [
+        style=invis
+    ]
+
+    Canary -> Visitor [
+        arrowhead="onormal"
+    ]
+
+    Interpreter -> Visitor [
+        arrowhead="onormal"
+    ]
+
+    FunDecl -> Declaration [
+        arrowhead="onormal"
+    ]
+
+    VarDecl -> Declaration [
+        arrowhead="onormal"
+    ]
+
+    ASTPrinter -> Visitor [
+        arrowhead="onormal"
+    ]
+
+    Canary -> SymbolTable [
+        arrowhead="open",
+        label="uses"
+    ]
+
+    Symbol -> SymbolTable [
+        arrowhead="diamond"
+    ]
+
+    Interpreter -> Environment [
+        arrowhead="open",
+        label="uses"
+    ]
+
+    Function -> Environment [
+        arrowhead="diamond"
+    ]
+
+    Interpreter -> Returnable [
+        arrowhead="open",
+        label="throws"
+    ]
+
+    Function -> Returnable [
+        arrowhead="open",
+        label="catches"
+    ]
+
+    Environment -> Object [
+        style=invis
+    ]
+
+    Object -> Environment [
+        arrowhead="diamond"
+    ]
+
+    rankdir=TB;
+
+    {rank=min; VvplController, ErrorHandler}
+    {rank=same; Scanner, Parser, Canary, Interpreter}
+    {rank=same; Declaration, Visitor}
+    {rank=same; Statement, FunDecl, VarDecl, ASTPrinter, Returnable}
+    {rank=same; Expression, Stmts, SymbolTable, Environment}
+    {rank=max; Exprs, Symbol, Function}
+}
+```
+
+### Activity Diagram
+
+```{dot}
+digraph Activity {
+    graph [splines=ortho, rankdir=TB, nodesep=0.55];
+    node [fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    start [shape=circle, label="", width=0.3, style=filled];
+    end   [shape=doublecircle, label="", width=0.3, style=filled];
+
+    Error [label="Report Erros", shape=rect, style=rounded]
+    Scan [label="Scan", shape=rect, style=rounded];
+    Parse [label="Parse", shape=rect, style=rounded];
+    Check [label="Check Semantics", shape=rect, style=rounded];
+    Interprete [label="Interprete", shape=rect, style=rounded];
+
+    ScanOk [shape=diamond, label="", 
+        width=0.3, height=0.3, xlabel="Ok?", fontsize=11];
+    ParseOk [shape=diamond, label="", 
+        width=0.3, height=0.3, xlabel="Ok?", fontsize=11];
+    CheckOk [shape=diamond, label="", 
+        width=0.3, height=0.3, xlabel="Ok?", fontsize=11];
+
+    start -> Scan
+    Scan -> ScanOk
+    ScanOk -> Parse [taillabel="Yes", fontsize=11]
+    ScanOk -> Error [taillabel="No", fontsize=11]
+    Parse -> ParseOk
+    ParseOk -> Check [taillabel="Yes", fontsize=11]
+    ParseOk -> Error [taillabel="No", fontsize=11]
+    Check -> CheckOk
+    CheckOk -> Interprete [taillabel="Yes", fontsize=11]
+    CheckOk -> Error [taillabel="No", fontsize=11]
+    Interprete -> end
+    Error -> end
+
+    end -> Interprete [style=invis]
+
+    {rank=same; start, Scan, ScanOk, Parse, ParseOk, Check, CheckOk}
+    {rank=same; Error, Interprete}
+}
+```
+
+This clear division of phases allows the code to be Single-Resposibility and Open-Close as it makes it very easy to change how one phase is executed, or to insert an additional phase at any point - without influencing other classes. \newline
+
+Additionally the Visitor Pattern was used to visit the AST nodes, which keeps the implementation of the nodes clean and focused only on their data - allowing for easy implementation of the Semantic Checker, the Tree-Walk `Interpreter`, the `ASTPrinter` (for debugging purposes) and possible additional checkers if need be.
+
+## Implementation
+
+### Scanning
+
+The `Scanner` goes through the source code character-by-character and handles each expected character in it's respective way via a simple switch-case. It matches single-character tokens right away, and for single or 2-character tokens (eg. '<' could be either '<' or '<=') it looks one character ahead. For longer and more complicated tokens (such as ids, keywords, literal strings and numbers) it reads all expected characters until a specified end (usually a whitespace or a quotation mark) and checks via a hash-map if the resulting lexeme is a keyword or not. \newline
+
+All whitespaces (except in strings) are ignored, and all unexpected characters result in a `SyntaxError`.
+
+### Parsing
+
+We implemented a recursive-descent `Parser` with one lookahead. It implements the production rules as specified in the grammar by calling an appropriate recursive method for each rule (eg. `declaration()`, `ifStmt()`, `or()`...). All ambiguities are resolved by looking one token ahead and matching it with a production rule. All unexpected tokens that don't match any of the production rules result in a `ParseError`. At this point the `Parser` skips to the next semicolon token to "synchronize" to the next declaration. \newline
+
+For the `cast` expression a specific class for the AST was defined that has two children: `type` (leaf) and `value` (deriving from `expression`). This allows for very easy type-checking and interpreting of cast expressions. \newline
+
+The "dangling else" is assigned to **the most nested if**, and all following "elses" are assigned to the second most nested, the third, and so on.
+
+### Semantic Analysis
+
+We perform the Scope Analysis and Type Analysis simultaneously, due to their similar nature and to avoid overhead of running the checker twice. But first we quickly go over the list of declarations and add the signatures of function declarations as `Symbol`s to the `SymbolTable` to allow for out-of-order declarations of functions in the global scope. Then we properly walk the tree and for every AST node we check the applicable properties:
+
+- if a variable has been defined (we don't allow shadowing)
+- if a function has been defined
+- if a function is not being defined anywhere other than the global scope
+- if function parameters have unique names
+- if there is no unreachable code after a `return` statement
+- if there is no return statement outside a function
+
+And for each AST node, if none of the above applicable properties were violated, we check:
+
+- if the initializer type matches the declared variable type
+- if there is an initializer at all
+- if binary operands are of correct type
+- if logical operands are of correct type
+- if a value can be casted
+- if the type of returned value matches the declared function type
+
+To do that, the Semantic Check `Visitor` returns a `SymbolType` when visiting any node, to pass information to the parent node about it's children's types. All declarations are stored in the `SymbolTable` and a new `SymbolTable` is created for each block or function and then destroyed at the end of the scope, disallowing the usage of variables defined in a deeper scope. \newline
+
+To handle the return statements, at the beginning of `visitFunDecl()` method a special symbol is added to the function's `SymbolTable` that acts as a placeholder for the return value and stores information about it's expected type. While visiting the `returnStmt` the checker can then check if the current scope is a function scope (it keeps that information) and extract the special symbol's type to compare it with the statement's `value` child node's type. \newline
+
+If a function's type is unspecified it is treated as `void`-type and all return statements in that function are expected to not have a value. \newline
+
+If any properties are violated the checker (similarly to `Scanner` and `Parser`) reports either a `ScopeError` or a `TypeError` to the `ErrorHandler`, and returns `null` as the type of the node. That way parent nodes know that something went wrong and can keep on looking for different violations, instead of propagating the same error higher.
+
+### Interpretation
+
+As mentioned before, the `Interpreter` is an AST `Visitor` and executes the code by walking the tree. It assumes that everything that ought to have been checked during previous phases has been checked correctly and that no error appeared along the way. \newline
+
+That being said, the `Interpreter` is still checking for a few things:
+
+- division by 0
+- runtime evaluable casting rules (what boolean value to cast a number to, and if a string can be casted to a number)
+
+And throws a `RuntimeError` and stops the execution if need be. \newline
+
+An `Environment` is used to map variable names to objects with their value at any given moment. Additionally, to handle functions, a new `Function` class has been declared (also mapped in the environment to the function name), that stores the function's declaration's AST node and interprets it (using the same interpreter, but a new, local environment) everytime it is called. The local environment initially contains only the mapping of parameter names (here we're allowing shadowing global variables) onto their respective values, given by the `callExpr`, and other globally declared functions. \newline
+
+The `visitReturnStmt()` method throws a special kind of error that remembers the value object that is being returned. That `Returnable` error is then caught by the mentioned above `Function` object during interpretation. The returned value is extracted and returned back to the initial `callExpr`.
+
+### Monitoring and Logging
+
+Due to the clear phase division, it is easy to add logging (printing the tokens or the AST) at any point of the interpretation process. However, we don't do that during the main program execution - the only things that appear is the output of the program, or the errors. The logging is used only for certain tests.
+
+## Testing & Evaluation
+
+We created convenient test classes that dynamically create tests for all files in their respective `resources` directory. They run the tested component on the given `.in` file and compare the results with the given `.<component>` or `.out` file. We tried to test all major components, all AST nodes and almost all errors that are possible to appear. \newline
+
+The only thing we changed in the given tests was the way the errors were printed and their content - to align with our errors which we tried to make more descriptive. We made sure that that the error types and lines were identical.
+
+# Teamwork Organization
+
+As our team consists of 2 people and there are 4 major components/phases of our interpretation process - each person worked on 2 of the components.
+
+- **Nel**: Parsing and Semantic Checks
+- **Jan**: Scanning and Interpreting
+
+

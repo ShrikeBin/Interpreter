@@ -12,9 +12,8 @@ import vvpl.scan.Scanner;
 import vvpl.parse.Parser;
 import vvpl.scan.Token;
 import vvpl.semantics.Canary;
-import vvpl.ast.visitors.*;
 
-public class Vvpl 
+public class VvplController
 {
 	public static void main(String[] args) throws IOException 
 	{
