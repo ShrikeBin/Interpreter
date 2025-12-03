@@ -346,7 +346,7 @@ All whitespaces (except in strings) are ignored, and all unexpected characters r
 
 We implemented a recursive-descent `Parser` with one lookahead. It implements the production rules as specified in the grammar by calling an appropriate recursive method for each rule (eg. `declaration()`, `ifStmt()`, `or()`...). All ambiguities are resolved by looking one token ahead and matching it with a production rule. All unexpected tokens that don't match any of the production rules result in a `ParseError`. At this point the `Parser` skips to the next semicolon token to "synchronize" to the next declaration. \newline
 
-For the `cast` expression a specific class for the AST was defined that has two children: `type` (leaf) and `value` (deriving from `expression`). This allows for very easy type-checking and interpreting of cast expressions. \newline
+For the `cast` expression a specific class for the AST was defined that has two children: `type` (leaf) and `value` (deriving from `expression`). This allows for very easy type-checking and interpreting of cast expressions as well as nested `cast` expressions. \newline
 
 The "dangling else" is assigned to **the most nested if**, and all following "elses" are assigned to the second most nested, the third, and so on.
 
@@ -399,7 +399,7 @@ Due to the clear phase division, it is easy to add logging (printing the tokens 
 
 ## Testing & Evaluation
 
-We created convenient test classes that dynamically create tests for all files in their respective `resources` directory. They run the tested component on the given `.in` file and compare the results with the given `.<component>` or `.out` file. We tried to test all major components, all AST nodes and almost all errors that are possible to appear. \newline
+We created convenient test classes that dynamically create unit tests for all files in their respective `resources` directory. They run the tested component on the given `.in` file and compare the results with the given `.<component>` or `.out` file. We tried to test all major components, all AST nodes and almost all errors that are possible to appear. \newline
 
 The only thing we changed in the given tests was the way the errors were printed and their content - to align with our errors which we tried to make more descriptive. We made sure that that the error types and lines were identical.
 
@@ -410,4 +410,12 @@ As our team consists of 2 people and there are 4 major components/phases of our 
 - **Nel**: Parsing and Semantic Checks
 - **Jan**: Scanning and Interpreting
 
+This division allowed to avoid potential merge-conflicts. Our workflow was organized through Git and we communicated regularly to ensure consistency in error handling and the interpretation pipeline itself. \newline
 
+While we were already familiar with regexes, we definitely learned a lot about finite automatas, grammars, production rules, IRs - but mostly about LL(1) grammars of course, since that was the grammar of the language we were interpreting.
+
+# Discussion
+
+Alternatively to writing the scanner and the parser ourselves, we could've used various scanner and parser generators (like Flex and Bison for C) which could guarantee correctness, save time and work and teach us how to use a new framework. On the other hand, the con of this option is that possibly we would have to spend more time learning to even use this technology and it might prove inefficient and a bit of an overkill for such a small language. \newline
+
+However, due to 
