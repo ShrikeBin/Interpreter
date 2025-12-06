@@ -416,6 +416,10 @@ While we were already familiar with regexes, we definitely learned a lot about f
 
 # Discussion
 
-Alternatively to writing the scanner and the parser ourselves, we could've used various scanner and parser generators (like Flex and Bison for C) which could guarantee correctness, save time and work and teach us how to use a new framework. On the other hand, the con of this option is that possibly we would have to spend more time learning to even use this technology and it might prove inefficient and a bit of an overkill for such a small language. \newline
+Alternatively to writing the scanner and the parser ourselves, we could've used various scanner and parser generators (like Flex and Bison for C) which could guarantee correctness, save time and work and teach us how to use a new framework. On the other hand, the downside of this option is that possibly, we would have to spend more time learning to use this technology and later it might have prove inefficient and a slight overkill for such a small language. \newline
 
-However, due to 
+At this point adding anything new to the language and grammar would require substantial changes in each and every part of our program. Automation of Scanners and Parsers and more unified way of handling AST could be helpfull if we ever decided to expand the VVPL. /newline
+
+Using Tree-Walk interpreter is also considered very inefficient, it'd be better to first translate the code into more LLVM-like structure and then run the ByteCode itself as it has a lot of built in optimizations we wouldn't have to worry about. Personally I think that using Try Catch methods as a way of returing functions provides too big of an overhead. /newline
+
+Overally changing the general form of the interpreter and automation of Scanners and Parsers could allow us to create a very verbose and functional language, that is fast (compiled into LLVM, then either interpreted or compiled to Machine Code using **gcc**) and easy to modify to your needs. Possible new features include allowing user inputs or explicit memory allocation.
