@@ -340,7 +340,7 @@ Additionally the Visitor Pattern was used to visit the AST nodes, which keeps th
 
 The `Scanner` goes through the source code character-by-character and handles each expected character in it's respective way via a simple switch-case. It matches single-character tokens right away, and for single or 2-character tokens (eg. '<' could be either '<' or '<=') it looks one character ahead. For longer and more complicated tokens (such as ids, keywords, literal strings and numbers) it reads all expected characters until a specified end (usually a whitespace or a quotation mark) and checks via a hash-map if the resulting lexeme is a keyword or not. \newline
 
-All whitespaces (except in strings) are ignored, and all unexpected characters result in a `SyntaxError`.
+All whitespaces (except in strings) are ignored, and all unexpected characters result in a `ScanError`.
 
 ### Parsing
 
@@ -391,7 +391,9 @@ And throws a `RuntimeError` and stops the execution if need be. \newline
 
 An `Environment` is used to map variable names to objects with their value at any given moment. Additionally, to handle functions, a new `Function` class has been declared (also mapped in the environment to the function name), that stores the function's declaration's AST node and interprets it (using the same interpreter, but a new, local environment) everytime it is called. The local environment initially contains only the mapping of parameter names (here we're allowing shadowing global variables) onto their respective values, given by the `callExpr`, and other globally declared functions. \newline
 
-The `visitReturnStmt()` method throws a special kind of error that remembers the value object that is being returned. That `Returnable` error is then caught by the mentioned above `Function` object during interpretation. The returned value is extracted and returned back to the initial `callExpr`.
+Function class itself, when called, binds all arguments, copies current interpreter environment, flags etc. to be later retreived and creates a fresh environment for the interpreter with needed function declarations and variables that then runs the function in `inFunction = true` mode expecting a return value (if void, returns null). After function is evaluated it returns the interpreter to the state before function call, and sets the `inFunction` flag to false. This method allows reusage of existing instance of the interpreter and avoids recursive creation of new ones when calling a big recursive function (reduces stack usage). \newline
+
+The returns themselves are handled by `visitReturnStmt()` method that throws a special kind of error - `Returnable` - that remembers the value object that is being returned. That `Returnable` error is then caught by the mentioned above `Function` object. The returned value is extracted and returned back to the initial `callExpr`.
 
 ### Monitoring and Logging
 
@@ -418,8 +420,8 @@ While we were already familiar with regexes, we definitely learned a lot about f
 
 Alternatively to writing the scanner and the parser ourselves, we could've used various scanner and parser generators (like Flex and Bison for C) which could guarantee correctness, save time and work and teach us how to use a new framework. On the other hand, the downside of this option is that possibly, we would have to spend more time learning to use this technology and later it might have prove inefficient and a slight overkill for such a small language. \newline
 
-At this point adding anything new to the language and grammar would require substantial changes in each and every part of our program. Automation of Scanners and Parsers and more unified way of handling AST could be helpfull if we ever decided to expand the VVPL. /newline
+At this point adding anything new to the language and grammar would require substantial changes in each and every part of our program. Automation of Scanners and Parsers and more unified way of handling AST could be helpful if we ever decided to expand the VVPL. \newline
 
-Using Tree-Walk interpreter is also considered very inefficient, it'd be better to first translate the code into more LLVM-like structure and then run the ByteCode itself as it has a lot of built in optimizations we wouldn't have to worry about. Personally I think that using Try Catch methods as a way of returing functions provides too big of an overhead. /newline
+Using Tree-Walk interpreter is also considered very inefficient, it'd be better to first translate the code into more LLVM-like structure and then run the ByteCode itself as it has a lot of built in optimizations we wouldn't have to worry about. Using try-catch methods as a way of returing functions also introduces a lot of overhead. \newline
 
-Overally changing the general form of the interpreter and automation of Scanners and Parsers could allow us to create a very verbose and functional language, that is fast (compiled into LLVM, then either interpreted or compiled to Machine Code using **gcc**) and easy to modify to your needs. Possible new features include allowing user inputs or explicit memory allocation.
+Overall, changing the general form of the interpreter and automating the Scanner and Parser could allow us to create a bigger, faster and easier to modify language (compiled into LLVM, then either interpreted or compiled to Machine Code using **clang**). Possible new features would include allowing user inputs or explicit memory allocation.

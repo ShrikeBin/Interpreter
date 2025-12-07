@@ -153,11 +153,11 @@ one. This is also visible on the activity diagram below. \newline
 
 \subsubsection{Class Diagram}\label{class-diagram}
 
-\includegraphics[width=5.5in,height=3.5in]{report_files/figure-latex/dot-figure-1.png}
+\includegraphics[width=6in,height=4.5in]{report_files/figure-latex/dot-figure-1.png}
 
 \subsubsection{Activity Diagram}\label{activity-diagram}
 
-\includegraphics[width=5.5in,height=3.5in]{report_files/figure-latex/dot-figure-2.png}
+\includegraphics[width=6in,height=2in]{report_files/figure-latex/dot-figure-2.png}
 
 This clear division of phases allows the code to be Single-Resposibility
 and Open-Close as it makes it very easy to change how one phase is
@@ -185,7 +185,7 @@ a whitespace or a quotation mark) and checks via a hash-map if the
 resulting lexeme is a keyword or not. \newline
 
 All whitespaces (except in strings) are ignored, and all unexpected
-characters result in a \texttt{SyntaxError}.
+characters result in a \texttt{ScanError}.
 
 \subsubsection{Parsing}\label{parsing}
 
@@ -316,11 +316,23 @@ we're allowing shadowing global variables) onto their respective values,
 given by the \texttt{callExpr}, and other globally declared functions.
 \newline
 
-The \texttt{visitReturnStmt()} method throws a special kind of error
-that remembers the value object that is being returned. That
+Function class itself, when called, binds all arguments, copies current
+interpreter environment, flags etc. to be later retreived and creates a
+fresh environment for the interpreter with needed function declarations
+and variables that then runs the function in
+\texttt{inFunction\ =\ true} mode expecting a return value (if void,
+returns null). After function is evaluated it returns the interpreter to
+the state before function call, and sets the \texttt{inFunction} flag to
+false. This method allows reusage of existing instance of the
+interpreter and avoids recursive creation of new ones when calling a big
+recursive function (reduces stack usage). \newline
+
+The returns themselves are handled by \texttt{visitReturnStmt()} method
+that throws a special kind of error - \texttt{Returnable} - that
+remembers the value object that is being returned. That
 \texttt{Returnable} error is then caught by the mentioned above
-\texttt{Function} object during interpretation. The returned value is
-extracted and returned back to the initial \texttt{callExpr}.
+\texttt{Function} object. The returned value is extracted and returned
+back to the initial \texttt{callExpr}.
 
 \subsubsection{Monitoring and Logging}\label{monitoring-and-logging}
 
@@ -381,20 +393,18 @@ slight overkill for such a small language. \newline
 At this point adding anything new to the language and grammar would
 require substantial changes in each and every part of our program.
 Automation of Scanners and Parsers and more unified way of handling AST
-could be helpfull if we ever decided to expand the VVPL. /newline
+could be helpful if we ever decided to expand the VVPL. \newline
 
 Using Tree-Walk interpreter is also considered very inefficient, it'd be
 better to first translate the code into more LLVM-like structure and
 then run the ByteCode itself as it has a lot of built in optimizations
-we wouldn't have to worry about. Personally I think that using Try Catch
-methods as a way of returing functions provides too big of an overhead.
-/newline
+we wouldn't have to worry about. Using try-catch methods as a way of
+returing functions also introduces a lot of overhead. \newline
 
-Overally changing the general form of the interpreter and automation of
-Scanners and Parsers could allow us to create a very verbose and
-functional language, that is fast (compiled into LLVM, then either
-interpreted or compiled to Machine Code using \textbf{gcc}) and easy to
-modify to your needs. Possible new features include allowing user inputs
-or explicit memory allocation.
+Overall, changing the general form of the interpreter and automating the
+Scanner and Parser could allow us to create a bigger, faster and easier
+to modify language (compiled into LLVM, then either interpreted or
+compiled to Machine Code using \textbf{clang}). Possible new features
+would include allowing user inputs or explicit memory allocation.
 
 \end{document}
