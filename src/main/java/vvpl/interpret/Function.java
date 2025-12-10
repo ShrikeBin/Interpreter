@@ -22,7 +22,7 @@ public class Function
         this.type = type;
     }
 
-    public Object call(Interpreter interpreter, List<Object> args) 
+    public Object call(Interpreter interpreter, List<Object> args, int line) 
     {
         // create new environment for function scope
         Environment functionEnv = new Environment(null);
@@ -51,6 +51,10 @@ public class Function
         } 
         catch (Returnable ret) 
         {
+            if(type.equals("void") && ret.value != null)
+            {
+                throw runtimeError(line, "Function \"" + name + "\" is declared void but returned a value." );
+            }
             return ret.value;
         }
         finally
@@ -58,6 +62,20 @@ public class Function
             interpreter.env = prevEnv;
             interpreter.inFunction = prev;
         }
-        return null;
+
+        if(!type.equals("void"))
+        {
+            throw runtimeError(line, "Function \"" + name + "\" did not return a value." );
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private RuntimeError runtimeError(int line, String text)
+    {
+        ErrorHandler.error(line, text);
+        return new RuntimeError(text);
     }
 }

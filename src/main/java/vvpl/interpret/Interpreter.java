@@ -160,7 +160,7 @@ public class Interpreter implements Visitor<Object>
                 arguments.add(evaluate(arg));
             }
 
-            Object result = function.call(this, arguments);
+            Object result = function.call(this, arguments, expr.ID.line);
             return result;
         }
         return null;
@@ -384,6 +384,10 @@ public class Interpreter implements Visitor<Object>
             throw runtimeError(stmt.keyword.line,"Return statements can only be used inside functions.");
         }
 
+        if(stmt.value == null)
+        {
+            throw new Returnable(null);
+        }
         throw new Returnable(evaluate(stmt.value)); 
     }
 

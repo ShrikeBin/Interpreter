@@ -1,0 +1,7 @@
+function f() has_type Number{
+    if(false)
+    {
+        variable x has_type Number is 11;
+    }
+}
+f();

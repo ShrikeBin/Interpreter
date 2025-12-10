@@ -76,7 +76,7 @@ public class VvplController
 		}
 		catch (Exception error) 
 		{
-			System.err.println("[ERROR DURING INTERPRETATION]: " + error);
+			System.err.println("[ERROR DURING INTERPRETATION]");
 		}
 	}
 }
